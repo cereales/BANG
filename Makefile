@@ -10,6 +10,9 @@ test:
 	@ echo "Launch bot in test mode."
 	@ $(EXEC) bot.py TEST
 
+unit-test:
+	@ $(EXEC) game/test_bang.py
+
 check:
 	$(EXEC) --version
 

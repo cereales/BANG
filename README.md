@@ -7,3 +7,5 @@ doc init:
 - config (token)
 
 doc run
+doc test:
+- add line Makefile

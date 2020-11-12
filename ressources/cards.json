@@ -1,0 +1,119 @@
+{
+  "1C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "2S": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "RH": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "VD": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "0C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "9C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "8C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "7C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "6C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "5C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "4C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "3C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  },
+  "2C": {
+    "name": "bang",
+    "effects": [
+      {
+        "id": 1,
+        "targets": 2
+      }
+    ]
+  }
+}
