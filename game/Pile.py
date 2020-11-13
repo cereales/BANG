@@ -1,7 +1,6 @@
 import logging
 import random
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class Pile:
