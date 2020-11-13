@@ -1,118 +1,155 @@
 {
   "1C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "2S": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "RH": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "VD": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
-      }
-    ]
-  },
-  "0C": {
-    "name": "bang",
-    "effects": [
-      {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "9C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "8C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "7C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "6C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "5C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "4C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "3C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   },
   "2C": {
     "name": "bang",
+    "desc": "",
     "effects": [
       {
-        "id": 1,
-        "targets": 2
+        "id": 0,
+        "range": 1,
+        "targets": 6
+      }
+    ]
+  },
+  "1C": {
+    "name": "bang",
+    "desc": "",
+    "effects": [
+      {
+        "id": 0,
+        "range": 1,
+        "targets": 6
+      }
+    ]
+  },
+  "0C": {
+    "name": "bang",
+    "desc": "",
+    "effects": [
+      {
+        "id": 0,
+        "range": 1,
+        "targets": 6
       }
     ]
   }

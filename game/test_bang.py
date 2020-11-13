@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 from Bang import Bang
 
 def main(player):
-    logger.info("Main {} {}".format(player.id, "*" if player.is_sherif() else ""))
+    logger.info("Main {} {} {}HP".format(player.id, "*" if player.is_sherif() else "", player.get_life()))
     for card in player.hand:
         logger.info("- {}".format(card.id))
 
@@ -24,10 +24,10 @@ logger.info(game.cards.sorted_card_id)
 logger.info(game.cards.rack_sorted_card_id)
 
 player = game.first_player
-for _ in range(5):
+for _ in range(2):
     assert game.turn_step_draw(player.id)
     main(player)
-    assert game.turn_step_play_card(player.id, player.hand[0].id)
+    assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
     main(player)
     assert game.turn_step_end(player.id)
     assert not game.turn_step_next_player(player.id)
@@ -38,3 +38,8 @@ for _ in range(5):
     logger.info("rack {}".format(game.cards.rack_sorted_card_id))
 
     player = player.get_left_player()
+
+assert game.turn_step_draw(player.id)
+main(player)
+assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
+main(player)

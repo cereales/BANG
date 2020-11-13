@@ -16,6 +16,7 @@ class TurnStep:
     ACTION = 1
     DISCARD = 2
     END = 3
+    END_OF_GAME = 4
 
 
 class Bang:
@@ -30,10 +31,12 @@ class Bang:
 
         # Initiate players around table
         self.players = []
+        self.players_id = {}
         previous_player = None
         for player_id in players_id:
             previous_player = Player(player_id, previous_player)
             self.players.append(previous_player)
+            self.players_id[player_id] = previous_player
         self.players[0].set_right_player(self.players[-1])
         self.players[-1].set_left_player(self.players[0])
         self.first_player = None
@@ -127,14 +130,18 @@ class Bang:
             return False
 
         # Play card from hand
-        self.cards.discard_card_from_player(self.current_player, card)
-        self.execute_card(card, player_id, target_player_id, target_card_id)
+        target_player = self.players_id[target_player_id] if target_player_id is not None else None
+        target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
+        if card.execute(self.current_player, target_player, target_card):
+            self.cards.discard_card_from_player(self.current_player, card)
 
+        # Check victory
+        # tmp : victory is to kill everybody
+        if self.current_player.get_left_player() == self.current_player:
+            logger.info("VICTORY of {}".format(player_id))
+            self.current_turn_step = TurnStep.END_OF_GAME
+            
         return True
-
-
-    def execute_card(self, card, player_id, target_player_id=None, target_card_id=None):
-        pass
 
 
     def turn_step_end(self, player_id):
@@ -147,7 +154,7 @@ class Bang:
             self.current_turn_step = TurnStep.DISCARD
         else:
             self.current_turn_step = TurnStep.END
-            self.turn_step_next_player()
+            assert self.turn_step_next_player(player_id)
         return True
 
 
