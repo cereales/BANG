@@ -12,6 +12,8 @@ test:
 
 unit-test:
 	@ $(EXEC) game/test_bang.py
+	echo "***********************************************************************"
+	@ $(EXEC) game/test_rules.py
 
 check:
 	$(EXEC) --version

@@ -34,9 +34,7 @@ class Card:
         self.effects = effects
 
     def execute(self, player, target_player=None, target_card=None):
-        if self.id == "1C":
-            logger.warn("*****************************************************")
-            print("Use 1C ****")
+        logger.debug('Play {} "{}"'.format(self.id, self.name))
         logger.debug("Using effects {}".format(self.effects))
         execution_result = ExecuteEffect.FAIL
         for effect in self.effects:
