@@ -41,8 +41,8 @@ class Player:
 
     ## Indirect getters
     # Place around the table
-    def has_in_range(self, player):
-        range_value = self.weapon.get_range() if self.weapon is not None else 1
+    def has_in_range(self, player, max_range=None):
+        range_value = (self.weapon.get_range() if self.weapon is not None else 1) if max_range is None else max_range
         return self.distance_to(player) <= range_value
     def distance_to(self, player):
         # we assume we do not look for distance to self.
@@ -63,6 +63,8 @@ class Player:
     # Played role & character
     def is_sherif(self):
         return self.role.is_sherif()
+    def is_dead(self):
+        return self.get_life() <= 0
     # Cards
     def has_card_in_hand(self, card):
         return card in self.hand
@@ -83,15 +85,16 @@ class Player:
     def set_role(self, role):
         self.role = role
     def set_character(self, character):
-        self.life = 1
+        self.life = 2
 
     ## Indirect setters
     # Place around the table
     # Played role & character
-    def lose_health(self):
+    def lose_health(self, from_player):
         self.life -= 1
+        logger.debug("{} lose 1HP from {}".format(self.id, from_player.id))
         if self.life <= 0:
-            self.on_death()
+            self.on_death(from_player)
     # Cards
     def add_card_to_hand(self, card):
         self.hand.append(card)
@@ -101,7 +104,10 @@ class Player:
     def init_turn(self):
         self.nb_bang_used = 0
 
-    def on_death(self):
+    def on_death(self, from_player):
+        # if (self == from_player):
+        #     logger.debug("Detect suicide.")
+        #     print("*** Suicide")
         left_player = self.get_left_player()
         right_player = self.get_right_player()
         left_player.set_right_player(right_player)

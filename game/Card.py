@@ -10,16 +10,16 @@ class Type:
     # DISCARD = 4
 
 class Range:
-    # CASTER = 0
+    CASTER = 0
     IN_RANGE = 1
-    # IN_RANGE_CUSTO = 2
-    # NO_RANGE = 3
-    # OTHERS = 4
+    IN_RANGE_CUSTO = 2
+    NO_RANGE = 3
+    ALL_OTHERS = 4
 
 class Target:
-    # CASTER = 1
+    CASTER = 1
     SHERIF = 2
-    # OTHERS = 4
+    OTHERS_EXCEPT_SHERIF = 4
 
 
 class Card:
@@ -29,19 +29,55 @@ class Card:
         self.effects = effects
 
     def execute(self, player, target_player=None, target_card=None):
+        # if self.id == "1C":
+        #     logger.warn("*****************************************************")
+        #     print("Use 1C ****")
+        logger.debug("Using effects {}".format(self.effects))
         for effect in self.effects:
+            local_target_players = [target_player]
+            targets = effect["targets"]
+
             range_type = effect["range"]
-            if (range_type & Range.IN_RANGE) and (target_player is None or not player.has_in_range(target_player)):
+            if (range_type == Range.CASTER):
+                local_target_players = [player]
+            if (range_type == Range.IN_RANGE) and (target_player is None or not player.has_in_range(target_player)):
                 logger.error("Cannot target {} because he is not in range (or inexistant).".format(target_player.id if target_player is not None else None))
                 return False
-            targets = effect["targets"]
-            # if not (targets & Target.CASTER) and target_player == player:
-            #     return False
-            # if not (targets & Target.SHERIF) and target_player.is_sherif():
-            #     return False
+            if (range_type == Range.IN_RANGE_CUSTO) and (target_player is None or not player.has_in_range(target_player, effect["max_range"])):
+                logger.error("Cannot target {} because he is not in range {} (or inexistant).".format(target_player.id if target_player is not None else None, effect["max_range"]))
+                return False
+            if (range_type == Range.ALL_OTHERS):
+                local_target_players = []
+                local_player = player.get_left_player()
+                while local_player != player:
+                    if can_affect(local_player, targets, player):
+                        local_target_players.append(local_player)
+                    local_player = local_player.get_left_player()
+            logger.debug("Try to shoot to {}".format([p.id for p in local_target_players]))
+
+            if len(local_target_players) == 0:
+                logger.error("Nobody to target to.")
+                return False
+            for local_player in local_target_players:
+                if not can_affect(local_player, targets, player):
+                    return False
+
             # here targets have been checked
             type = effect["id"]
-            if type == Type.DAMAGE:
-                if range_type & Range.IN_RANGE:
-                    target_player.lose_health()
+            for local_player in local_target_players:
+                if type == Type.DAMAGE:
+                    local_player.lose_health(player)
         return True
+
+
+def can_affect(player, targets, caster):
+    if not (targets & Target.CASTER) and player == caster:
+        logger.warning("Cannot affect caster.")
+        return False
+    if not (targets & Target.SHERIF) and player.is_sherif():
+        logger.warning("Cannot affect sherif.")
+        return False
+    if not (targets & Target.OTHERS_EXCEPT_SHERIF) and not (player.is_sherif() or player == caster):
+        logger.warning("Cannot affect {}.".format(player.id))
+        return False
+    return True
