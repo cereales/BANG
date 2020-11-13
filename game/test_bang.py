@@ -6,14 +6,14 @@ logger = logging.getLogger(__name__)
 from Bang import Bang
 
 def main(player):
-    logger.info("Main {}".format(player.id))
+    logger.info("Main {} {}".format(player.id, "*" if player.is_sherif() else ""))
     for card in player.hand:
         logger.info("- {}".format(card.id))
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
 for p in game.players:
-    logger.info("- {} <- ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
+    logger.info("- {} <- {} ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
 logger.info(game.roles.cards)
 logger.info(game.roles.sorted_card_id)
 logger.info(game.cards.cards)

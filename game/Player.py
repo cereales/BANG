@@ -32,6 +32,10 @@ class Player:
 
     def is_id(self, id):
         return self.id == id
+    # Played role & character
+    def is_sherif(self):
+        return self.role.is_sherif()
+    # Cards
     def has_card_in_hand(self, card):
         return card in self.hand
     def has_to_many_cards(self):
