@@ -1,9 +1,11 @@
+import logging
 from Pile import Pile
 from Role import Role
 from Character import Character
 from Card import Card
 from Player import Player
 import json
+logger = logging.getLogger(__name__)
 
 
 MIN_NB_PLAYERS = 4
@@ -102,6 +104,7 @@ class Bang:
 
     def turn_step_draw(self, player_id):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.DRAW:
+            logger.error("It is not turn to {} to draw a card.".format(player_id))
             return False
         self.current_player.init_turn()
 
@@ -116,9 +119,11 @@ class Bang:
 
     def turn_step_play_card(self, player_id, card_id, target_player_id=None, target_card_id=None):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.ACTION:
+            logger.error("It is not turn to player {} to play a card.".format(player_id))
             return False
         card = self.cards.get_card(card_id)
         if not self.current_player.has_card_in_hand(card):
+            logger.error("Player {} is trying to play a card he does not have.".format(player_id))
             return False
 
         # Play card from hand
@@ -134,6 +139,7 @@ class Bang:
 
     def turn_step_end(self, player_id):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.ACTION:
+            logger.error("It is not turn to {} to stop playing cards.".format(player_id))
             return False
 
         # End turn
@@ -147,9 +153,11 @@ class Bang:
 
     def turn_step_discard_card(self, player_id, card_id):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.DISCARD:
+            logger.error("It is not turn to {} to discard a card.".format(player_id))
             return False
         card = self.cards.get_card(card_id)
         if not self.current_player.has_card_in_hand(card):
+            logger.error("Player {} is trying to discard a card he does not have.".format(player_id))
             return False
 
         # Discard one over numbered card
@@ -163,6 +171,7 @@ class Bang:
 
     def turn_step_next_player(self, player_id):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.END:
+            logger.error("Player {} cannot end his turn.".format(player_id))
             return False
 
         # Next player
