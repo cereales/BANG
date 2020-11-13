@@ -1,5 +1,6 @@
 import logging
 logger = logging.getLogger(__name__)
+from Card import ExecuteEffect
 
 
 class Player:
@@ -95,6 +96,8 @@ class Player:
         logger.debug("{} lose 1HP from {}".format(self.id, from_player.id))
         if self.life <= 0:
             self.on_death(from_player)
+            return ExecuteEffect.MAKE_DEAD
+        return ExecuteEffect.IS_SUCCESS
     # Cards
     def add_card_to_hand(self, card):
         self.hand.append(card)

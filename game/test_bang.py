@@ -28,6 +28,8 @@ compteur = 0
 while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
     for p in game.alive_players():
         logger.info("[ {}\t{}HP ]".format(p.id, p.life))
+    for p in game.players:
+        logger.info("- {} <- {} ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
     assert game.turn_step_draw(player.id)
     main(player)
     assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
@@ -40,5 +42,5 @@ while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
         logger.info("pile {}".format(game.cards.sorted_card_id))
         logger.info("rack {}".format(game.cards.rack_sorted_card_id))
 
-        player = player.get_left_player()
-        compteur += 1
+    player = player.get_left_player()
+    compteur += 1

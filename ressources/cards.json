@@ -5,8 +5,8 @@
     "effects": [
       {
         "id": 0,
-        "range": 1,
-        "targets": 6
+        "range": 0,
+        "targets": 7
       }
     ]
   },
@@ -121,17 +121,6 @@
     ]
   },
   "2C": {
-    "name": "bang",
-    "desc": "",
-    "effects": [
-      {
-        "id": 0,
-        "range": 1,
-        "targets": 6
-      }
-    ]
-  },
-  "1C": {
     "name": "bang",
     "desc": "",
     "effects": [

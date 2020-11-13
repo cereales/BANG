@@ -2,7 +2,7 @@ import logging
 from Pile import Pile
 from Role import Role
 from Character import Character
-from Card import Card
+from Card import Card, ExecuteEffect
 from Player import Player
 import json
 logger = logging.getLogger(__name__)
@@ -95,7 +95,7 @@ class Bang:
         while index < self.nb_players and self.players[index].is_dead():
             index += 1
         if index == self.nb_players:
-            return []
+            return iter([])
 
         first = self.players[index]
         yield first
@@ -104,6 +104,32 @@ class Bang:
             yield player
             player = player.get_left_player()
 
+
+    def check_victory(self):
+        # Adapt next player turn if suicide
+        # In case of suicide, current player is not anymore.
+        if self.current_player.is_dead():
+            left_player = self.current_player.get_left_player()
+            while self.current_player.is_dead() and self.current_player != left_player:
+                self.current_player = left_player
+                left_player = left_player.get_left_player()
+                self.current_turn_step = TurnStep.DRAW
+            logger.debug("Detect suicide. Next player {} will start his turn.".format(self.current_player.id))
+
+        logger.debug("Looking if there is a winner.")
+        # tmp : victory is to kill everybody
+        if self.current_player.is_dead():
+            logger.info("DRAW. No player in alive.")
+            self.current_turn_step = TurnStep.END_OF_GAME
+            return True
+        if self.current_player.get_left_player() == self.current_player:
+            logger.info("VICTORY of {}".format(self.current_player.id))
+            self.current_turn_step = TurnStep.END_OF_GAME
+            return True
+        return False
+
+
+    ## Turn step actions
 
     def turn_step_draw(self, player_id):
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.DRAW:
@@ -132,15 +158,13 @@ class Bang:
         # Play card from hand
         target_player = self.players_id[target_player_id] if target_player_id is not None else None
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
-        if card.execute(self.current_player, target_player, target_card):
+        execution_result = card.execute(self.current_player, target_player, target_card)
+        logger.warning(execution_result)
+        if execution_result & ExecuteEffect.IS_SUCCESS:
             self.cards.discard_card_from_player(self.current_player, card)
 
-        # Check victory
-        # tmp : victory is to kill everybody
-        if self.current_player.get_left_player() == self.current_player:
-            logger.info("VICTORY of {}".format(player_id))
-            self.current_turn_step = TurnStep.END_OF_GAME
-            
+        if execution_result & ExecuteEffect.MAKE_DEAD:
+            self.check_victory()
         return True
 
 

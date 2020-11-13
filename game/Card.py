@@ -21,6 +21,11 @@ class Target:
     SHERIF = 2
     OTHERS_EXCEPT_SHERIF = 4
 
+class ExecuteEffect:
+    FAIL = 0
+    IS_SUCCESS = 1
+    MAKE_DEAD = 2
+
 
 class Card:
     def __init__(self, id, name, effects):
@@ -29,10 +34,11 @@ class Card:
         self.effects = effects
 
     def execute(self, player, target_player=None, target_card=None):
-        # if self.id == "1C":
-        #     logger.warn("*****************************************************")
-        #     print("Use 1C ****")
+        if self.id == "1C":
+            logger.warn("*****************************************************")
+            print("Use 1C ****")
         logger.debug("Using effects {}".format(self.effects))
+        execution_result = ExecuteEffect.FAIL
         for effect in self.effects:
             local_target_players = [target_player]
             targets = effect["targets"]
@@ -42,10 +48,10 @@ class Card:
                 local_target_players = [player]
             if (range_type == Range.IN_RANGE) and (target_player is None or not player.has_in_range(target_player)):
                 logger.error("Cannot target {} because he is not in range (or inexistant).".format(target_player.id if target_player is not None else None))
-                return False
+                return ExecuteEffect.FAIL
             if (range_type == Range.IN_RANGE_CUSTO) and (target_player is None or not player.has_in_range(target_player, effect["max_range"])):
                 logger.error("Cannot target {} because he is not in range {} (or inexistant).".format(target_player.id if target_player is not None else None, effect["max_range"]))
-                return False
+                return ExecuteEffect.FAIL
             if (range_type == Range.ALL_OTHERS):
                 local_target_players = []
                 local_player = player.get_left_player()
@@ -57,17 +63,17 @@ class Card:
 
             if len(local_target_players) == 0:
                 logger.error("Nobody to target to.")
-                return False
+                return ExecuteEffect.FAIL
             for local_player in local_target_players:
                 if not can_affect(local_player, targets, player):
-                    return False
+                    return ExecuteEffect.FAIL
 
             # here targets have been checked
             type = effect["id"]
             for local_player in local_target_players:
                 if type == Type.DAMAGE:
-                    local_player.lose_health(player)
-        return True
+                    execution_result |= local_player.lose_health(player) & ExecuteEffect.MAKE_DEAD
+        return execution_result | ExecuteEffect.IS_SUCCESS
 
 
 def can_affect(player, targets, caster):
