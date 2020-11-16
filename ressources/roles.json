@@ -1,17 +1,30 @@
 {
   "1": {
-    "name": "Sherif"
+    "name": "Sherif",
+    "desc": "Tuez tous les Hors-la-loi et le Renegat !"
   },
   "2": {
-    "name": "Hors-la-loi"
+    "name": "Renegat",
+    "desc": "Soyez le dernier en jeu !"
   },
   "3": {
-    "name": "Hors-la-loi"
+    "name": "Hors-la-loi",
+    "desc": "Tuez le Shérif"
   },
   "4": {
-    "name": "Hors-la-loi"
+    "name": "Hors-la-loi",
+    "desc": "Tuez le Shérif"
   },
   "5": {
-    "name": "Hors-la-loi"
+    "name": "Adjoint",
+    "desc": "Protégez le Shérif ! Tuez tous les Hors-la-loi et le Renégat"
+  },
+  "6": {
+    "name": "Hors-la-loi",
+    "desc": "Tuez le Shérif"
+  },
+  "7": {
+    "name": "Adjoint",
+    "desc": "Protégez le Shérif ! Tuez tous les Hors-la-loi et le Renégat"
   }
 }
