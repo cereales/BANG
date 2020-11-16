@@ -1,14 +1,18 @@
 {
   "1": {
-    "name": "Luke"
+    "name": "Luke",
+    "life": 2
   },
   "2": {
-    "name": "Jack"
+    "name": "Jack",
+    "life": 2
   },
   "3": {
-    "name": "Bad"
+    "name": "Bad",
+    "life": 2
   },
   "4": {
-    "name": "Rose"
+    "name": "Rose",
+    "life": 2
   }
 }

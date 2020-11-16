@@ -63,7 +63,7 @@ class Bang:
             data = json.load(file)
             for id in data:
                 character = data[id]
-                self.characters.declare_card(id, Character())
+                self.characters.declare_card(id, Character(character["name"], character["life"]))
 
         # Distribute roles
         self.roles.shuffle()

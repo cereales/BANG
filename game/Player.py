@@ -86,7 +86,10 @@ class Player:
     def set_role(self, role):
         self.role = role
     def set_character(self, character):
-        self.life = 2
+        if self.is_sherif():
+            character.increase_max_life()
+        self.name = character.name
+        self.life = character.max_life
 
     ## Indirect setters
     # Place around the table
