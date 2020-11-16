@@ -9,7 +9,7 @@ def main(player):
     for card in player.hand:
         logger.info("- {}".format(card.id))
 
-def playUntil(player, card_name, target_id=None, target_card_id=None):
+def findPlayerWith(player, card_name):
     ids = [c.id for c in player.hand if c.name == card_name]
     while len(ids) == 0:
         while not game.turn_step_next_player(player.id):
@@ -18,14 +18,17 @@ def playUntil(player, card_name, target_id=None, target_card_id=None):
         assert game.turn_step_draw(player.id)
     for p in game.alive_players():
         main(p)
-    assert game.turn_step_play_card(player.id, ids[0], target_id, target_card_id)
+    return player, ids[0]
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
 
 player = game.first_player
 assert game.turn_step_draw(player.id)
-player = playUntil(player, "bang", player.get_right_player().id)
+
+player, card_id = findPlayerWith(player, "bang")
+assert game.turn_step_play_card(player.id, card_id, player.get_right_player().id)
+
 for p in game.alive_players():
     main(p)
 """
