@@ -36,6 +36,13 @@ class Card:
 
     def execute(self, player, target_player=None, target_card=None):
         logger.debug('Play {} "{}" id={}'.format(self.symbol, self.name, self.id))
+        # limit to one bang per turn
+        if self.name == "bang":
+            if player.nb_bang_used > 0:
+                logger.error("Reached limit of 1 bang per turn.")
+                return ExecuteEffect.FAIL
+            player.nb_bang_used += 1
+
         logger.debug("Using effects {}".format(self.effects))
         execution_result = ExecuteEffect.FAIL
         for effect in self.effects:

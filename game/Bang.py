@@ -159,13 +159,12 @@ class Bang:
         target_player = self.players_id[target_player_id] if target_player_id is not None else None
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
         execution_result = card.execute(self.current_player, target_player, target_card)
-        logger.warning(execution_result)
         if execution_result & ExecuteEffect.IS_SUCCESS:
             self.cards.discard_card_from_player(self.current_player, card)
 
         if execution_result & ExecuteEffect.MAKE_DEAD:
             self.check_victory()
-        return True
+        return execution_result
 
 
     def turn_step_end(self, player_id):
