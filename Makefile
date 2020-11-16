@@ -3,7 +3,7 @@ EXEC=python
 all: start
 
 start:
-	@ $(EXEC) bot.py DEFAULT 2&> log &
+	@ $(EXEC) bot.py DEFAULT > log 2>&1 &
 	@ echo "Bot running."
 
 test:
