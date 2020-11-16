@@ -7,7 +7,7 @@ from Bang import Bang, TurnStep
 def main(player):
     logger.info("{}\t{}HP ({})".format(player.id, player.get_life(), player.role.name))
     for card in player.hand:
-        logger.info("- {}".format(card.id))
+        logger.info("- {} ({})".format(card.symbol, card.name))
 
 def findPlayerWith(player, card_name):
     ids = [c.id for c in player.hand if c.name == card_name]

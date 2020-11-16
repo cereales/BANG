@@ -57,7 +57,7 @@ class Bang:
             data = json.load(file)
             for id in data:
                 card = data[id]
-                self.cards.declare_card(id, Card(id, card["name"], card["effects"]))
+                self.cards.declare_card(id, Card(id, card["id"], card["name"], card["effects"]))
         self.characters = Pile()
         with open("ressources/characters.json") as file:
             data = json.load(file)

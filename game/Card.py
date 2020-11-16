@@ -28,13 +28,14 @@ class ExecuteEffect:
 
 
 class Card:
-    def __init__(self, id, name, effects):
+    def __init__(self, id, symbol, name, effects):
         self.id = id
+        self.symbol = symbol
         self.name = name
         self.effects = effects
 
     def execute(self, player, target_player=None, target_card=None):
-        logger.debug('Play {} "{}"'.format(self.id, self.name))
+        logger.debug('Play {} "{}" id={}'.format(self.symbol, self.name, self.id))
         logger.debug("Using effects {}".format(self.effects))
         execution_result = ExecuteEffect.FAIL
         for effect in self.effects:

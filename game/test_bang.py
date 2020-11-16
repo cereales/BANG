@@ -8,7 +8,7 @@ from Bang import Bang, TurnStep
 def main(player):
     logger.info("Main {} {} {}HP".format(player.id, "*" if player.is_sherif() else "", player.get_life()))
     for card in player.hand:
-        logger.info("- {}".format(card.id))
+        logger.info("- {} ({})".format(card.symbol, card.name))
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
