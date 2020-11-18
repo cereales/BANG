@@ -75,6 +75,10 @@ class Pile:
         """
         self.rack_sorted_card_id.append(card.id)
 
-    def discard_card_from_player(self, player, card):
+    def discard_card_from_player_hand(self, player, card):
         player.remove_card_from_hand(card)
+        self.discard_card(card)
+
+    def discard_card_from_player_in_game(self, player, card):
+        player.remove_card_from_in_game(card)
         self.discard_card(card)

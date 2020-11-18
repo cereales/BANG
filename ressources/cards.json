@@ -1,13 +1,28 @@
 {
-  "14": {
+  "15": {
     "id": "1S",
-    "name": "lunette",
+    "name": "colt",
     "activation": 0,
     "desc": "",
     "effects": [
       {
-        "id": 6,
+        "id": 5,
         "range": 0,
+        "weapon_range": 2,
+        "targets": 3
+      }
+    ]
+  },
+  "14": {
+    "id": "1S",
+    "name": "remington",
+    "activation": 0,
+    "desc": "",
+    "effects": [
+      {
+        "id": 5,
+        "range": 0,
+        "weapon_range": 3,
         "targets": 3
       }
     ]

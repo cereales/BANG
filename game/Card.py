@@ -12,6 +12,7 @@ class Type:
     # MISS = 2
     # DRAW = 3
     # DISCARD = 4
+    WEAPON = 5
 
 class Range:
     CASTER = 0
@@ -41,6 +42,9 @@ class Card:
 
     def is_type_card_immediate(self):
         return self.activation & Activation.ONCE
+    def get_weapon_range(self):
+        assert self.effects[0]["id"] == Type.WEAPON
+        return self.effects[0]["weapon_range"]
 
     def possible_targets(self, player, target_player=None, target_card=None):
         logger.debug('Play {} "{}" id={}'.format(self.symbol, self.name, self.id))
@@ -98,11 +102,11 @@ class Card:
                     execution_result |= local_player.lose_health(player) & ExecuteEffect.MAKE_DEAD
         return execution_result | ExecuteEffect.IS_SUCCESS
 
-    def apply_effects(self, player, target_player=None, target_card=None):
+    def apply_effects(self, p_stack, player, target_player=None, target_card=None):
         execution_result = ExecuteEffect.FAIL
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
-            return execution_result, None
+            return execution_result
 
         player_with_card_in_game = None
         for effect, local_target_players in zip(self.effects, targets_by_effect):
@@ -113,9 +117,15 @@ class Card:
                     player_with_card_in_game = local_player
                     if local_player.has_card_in_game(self.name):
                         logger.error("Player {} already has card {} in game.".format(local_player.id, self.name))
-                        return execution_result, None
+                        return execution_result
+
+                if type == Type.WEAPON:
+                    local_player.set_weapon(self, p_stack)
+
         assert player_with_card_in_game is not None
-        return execution_result | ExecuteEffect.IS_SUCCESS, player_with_card_in_game
+        player.remove_card_from_hand(self)
+        player_with_card_in_game.add_card_to_in_game(self)
+        return execution_result | ExecuteEffect.IS_SUCCESS
 
 
 def can_affect(player, targets, caster):

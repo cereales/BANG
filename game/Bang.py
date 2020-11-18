@@ -162,12 +162,9 @@ class Bang:
         if card.is_type_card_immediate():
             execution_result = card.execute(self.current_player, target_player, target_card)
             if execution_result & ExecuteEffect.IS_SUCCESS:
-                self.cards.discard_card_from_player(self.current_player, card)
+                self.cards.discard_card_from_player_hand(self.current_player, card)
         else:
-            execution_result, player_with_card_in_game = card.apply_effects(self.current_player, target_player, target_card)
-            if execution_result & ExecuteEffect.IS_SUCCESS:
-                self.current_player.remove_card_from_hand(card)
-                player_with_card_in_game.add_card_to_in_game(card)
+            execution_result = card.apply_effects(self.cards, self.current_player, target_player, target_card)
 
         if execution_result & ExecuteEffect.MAKE_DEAD:
             self.check_victory()
@@ -198,7 +195,7 @@ class Bang:
             return False
 
         # Discard one over numbered card
-        self.cards.discard_card_from_player(self.current_player, card)
+        self.cards.discard_card_from_player_hand(self.current_player, card)
 
         # End turn
         if not self.current_player.has_to_many_cards():

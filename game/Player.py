@@ -43,7 +43,7 @@ class Player:
     ## Indirect getters
     # Place around the table
     def has_in_range(self, player, max_range=None):
-        range_value = (self.weapon.get_range() if self.weapon is not None else 1) if max_range is None else max_range
+        range_value = (self.weapon.get_weapon_range() if self.weapon is not None else 1) if max_range is None else max_range
         return self.distance_to(player) <= range_value
     def distance_to(self, player):
         # we assume we do not look for distance to self.
@@ -95,6 +95,10 @@ class Player:
             character.increase_max_life()
         self.name = character.name
         self.life = character.max_life
+    def set_weapon(self, weapon_card, p_stack):
+        if self.weapon is not None:
+            p_stack.discard_card_from_player_in_game(self, self.weapon)
+        self.weapon = weapon_card
 
     ## Indirect setters
     # Place around the table
@@ -113,6 +117,8 @@ class Player:
         self.hand.remove(card)
     def add_card_to_in_game(self, card):
         self.in_game.append(card)
+    def remove_card_from_in_game(self, card):
+        self.in_game.remove(card)
     # Turn play
     def init_turn(self):
         self.nb_bang_used = 0
