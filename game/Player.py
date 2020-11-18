@@ -103,11 +103,11 @@ class Player:
     ## Indirect setters
     # Place around the table
     # Played role & character
-    def lose_health(self, from_player):
+    def lose_health(self, p_stack, from_player):
         self.life -= 1
         logger.debug("{} lose 1HP from {}".format(self.id, from_player.id))
         if self.life <= 0:
-            self.on_death(from_player)
+            self.on_death(p_stack, from_player)
             return ExecuteEffect.MAKE_DEAD
         return ExecuteEffect.IS_SUCCESS
     # Cards
@@ -123,7 +123,7 @@ class Player:
     def init_turn(self):
         self.nb_bang_used = 0
 
-    def on_death(self, from_player):
+    def on_death(self, p_stack, from_player):
         # if (self == from_player):
         #     logger.debug("Detect suicide.")
         #     print("*** Suicide")
@@ -131,4 +131,8 @@ class Player:
         right_player = self.get_right_player()
         left_player.set_right_player(right_player)
         right_player.set_left_player(left_player)
+        for card in self.hand:
+            p_stack.discard_card_from_player_hand(self, card)
+        for card in self.in_game:
+            p_stack.discard_card_from_player_in_game(self, card)
         logger.debug("{} has been deadly shot.".format(self.id))

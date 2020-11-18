@@ -89,7 +89,7 @@ class Card:
         logger.debug("Targets are {}".format([[p.id for p in t] for t in target_players]))
         return target_players
 
-    def execute(self, player, target_player=None, target_card=None):
+    def execute(self, p_stack, player, target_player=None, target_card=None):
         execution_result = ExecuteEffect.FAIL
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
@@ -99,7 +99,7 @@ class Card:
             type = effect["id"]
             for local_player in local_target_players:
                 if type == Type.DAMAGE:
-                    execution_result |= local_player.lose_health(player) & ExecuteEffect.MAKE_DEAD
+                    execution_result |= local_player.lose_health(p_stack, player) & ExecuteEffect.MAKE_DEAD
         return execution_result | ExecuteEffect.IS_SUCCESS
 
     def apply_effects(self, p_stack, player, target_player=None, target_card=None):

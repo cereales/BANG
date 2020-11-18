@@ -8,12 +8,12 @@ from Bang import Bang, TurnStep
 def main(player):
     logger.info("Main {} {} {}HP".format(player.id, "*" if player.is_sherif() else "", player.get_life()))
     for card in player.hand:
-        logger.info("- {} ({})".format(card.symbol, card.name))
+        logger.info("- {} ({}) id={}".format(card.symbol, card.name, card.id))
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
 for p in game.players:
-    logger.info("- {} <- {} ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
+    logger.info("- {} <- {} ({} / {}) -> {}".format(p.left_player.id, p.id, game.show_role(p.id).name if game.show_role(p.id) is not None else "", p.role.name, p.right_player.id))
 logger.info(game.roles.cards)
 logger.info(game.roles.sorted_card_id)
 logger.info(game.cards.cards)
@@ -29,7 +29,7 @@ while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
     for p in game.alive_players():
         logger.info("[ {}\t{}HP ]".format(p.id, p.life))
     for p in game.players:
-        logger.info("- {} <- {} ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
+        logger.info("- {} <- {} ({} / {}) -> {}".format(p.left_player.id, p.id, game.show_role(p.id).name if game.show_role(p.id) is not None else "", p.role.name, p.right_player.id))
     assert game.turn_step_draw(player.id)
     main(player)
     if (player.hand[0].name == "bang"):

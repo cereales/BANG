@@ -160,8 +160,8 @@ class Bang:
         target_player = self.players_id[target_player_id] if target_player_id is not None else None
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
         if card.is_type_card_immediate():
-            execution_result = card.execute(self.current_player, target_player, target_card)
-            if execution_result & ExecuteEffect.IS_SUCCESS:
+            execution_result = card.execute(self.cards, self.current_player, target_player, target_card)
+            if (execution_result & ExecuteEffect.IS_SUCCESS) and self.current_player.has_card_in_hand(card): # card could not be in hand in case of suicide
                 self.cards.discard_card_from_player_hand(self.current_player, card)
         else:
             execution_result = card.apply_effects(self.cards, self.current_player, target_player, target_card)
@@ -212,3 +212,10 @@ class Bang:
         self.current_player = self.current_player.get_left_player()
         self.current_turn_step = TurnStep.DRAW
         return True
+
+
+    ## Out access
+
+    def show_role(self, player_id):
+        player = self.players_id[player_id]
+        return player.get_role() if player.is_sherif() or player.is_dead() else None
