@@ -32,8 +32,9 @@ while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
         logger.info("- {} <- {} ({}) -> {}".format(p.left_player.id, p.id, p.role.name, p.right_player.id))
     assert game.turn_step_draw(player.id)
     main(player)
-    assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
-    main(player)
+    if (player.hand[0].name == "bang"):
+        assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
+        main(player)
     if game.current_turn_step == TurnStep.ACTION:
         assert game.turn_step_end(player.id)
         while not game.turn_step_next_player(player.id):

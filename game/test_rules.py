@@ -4,8 +4,8 @@ logger = logging.getLogger(__name__)
 
 from Bang import Bang, TurnStep
 
-def main(player):
-    logger.info("{}\t{}HP ({})".format(player.id, player.get_life(), player.role.name))
+def main(player, current):
+    logger.info("{}\t{}HP ({})  {} {}".format(player.id, player.get_life(), player.role.name, [c.name for c in player.in_game], "<--" if current == player else ""))
     for card in player.hand:
         logger.info("- {} ({})".format(card.symbol, card.name))
 def changePlayer(player):
@@ -17,10 +17,15 @@ def changePlayer(player):
     return player
 def findPlayerWith(player, card_name, doubleCard=False):
     ids = [c.id for c in player.hand if c.name == card_name]
-    while len(ids) <= doubleCard:
+    counter = 0
+    while len(ids) <= doubleCard and counter < 10:
         player = changePlayer(player)
+        ids = [c.id for c in player.hand if c.name == card_name]
+        counter += 1
+    if counter >= 10:
+        raise ValueError("Cannot find {}".format(card_name))
     for p in game.alive_players():
-        main(p)
+        main(p, player)
     return player, ids[0]
 
 
@@ -33,9 +38,11 @@ player, card_id = findPlayerWith(player, "bang", True)
 assert game.turn_step_play_card(player.id, card_id, player.get_right_player().id)
 player, card_id = findPlayerWith(player, "bang")
 assert not game.turn_step_play_card(player.id, card_id, player.get_right_player().id)
+player, card_id = findPlayerWith(player, "lunette")
+assert game.turn_step_play_card(player.id, card_id, player.id)
 
 for p in game.alive_players():
-    main(p)
+    main(p, player)
 """
 while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
     for p in game.alive_players():

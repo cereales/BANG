@@ -45,6 +45,8 @@ class Pile:
         return self.cards[id]
 
 
+    ## Draw card
+
     def draw_card(self):
         """
         Draw card at the top and returns card.
@@ -64,6 +66,8 @@ class Pile:
     def draw_card_to_player(self, player):
         player.add_card_to_hand(self.draw_card())
 
+
+    ## Discard card
 
     def discard_card(self, card):
         """

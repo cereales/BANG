@@ -57,7 +57,7 @@ class Bang:
             data = json.load(file)
             for id in data:
                 card = data[id]
-                self.cards.declare_card(id, Card(id, card["id"], card["name"], card["effects"]))
+                self.cards.declare_card(id, Card(id, card["id"], card["name"], card["activation"], card["effects"]))
         self.characters = Pile()
         with open("ressources/characters.json") as file:
             data = json.load(file)
@@ -156,11 +156,18 @@ class Bang:
             return False
 
         # Play card from hand
+        execution_result = ExecuteEffect.FAIL
         target_player = self.players_id[target_player_id] if target_player_id is not None else None
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
-        execution_result = card.execute(self.current_player, target_player, target_card)
-        if execution_result & ExecuteEffect.IS_SUCCESS:
-            self.cards.discard_card_from_player(self.current_player, card)
+        if card.is_type_card_immediate():
+            execution_result = card.execute(self.current_player, target_player, target_card)
+            if execution_result & ExecuteEffect.IS_SUCCESS:
+                self.cards.discard_card_from_player(self.current_player, card)
+        else:
+            execution_result, player_with_card_in_game = card.apply_effects(self.current_player, target_player, target_card)
+            if execution_result & ExecuteEffect.IS_SUCCESS:
+                self.current_player.remove_card_from_hand(card)
+                player_with_card_in_game.add_card_to_in_game(card)
 
         if execution_result & ExecuteEffect.MAKE_DEAD:
             self.check_victory()

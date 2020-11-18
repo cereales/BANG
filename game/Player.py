@@ -106,6 +106,8 @@ class Player:
         self.hand.append(card)
     def remove_card_from_hand(self, card):
         self.hand.remove(card)
+    def add_card_to_in_game(self, card):
+        self.in_game.append(card)
     # Turn play
     def init_turn(self):
         self.nb_bang_used = 0
