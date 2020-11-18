@@ -66,6 +66,8 @@ class Player:
         return self.role.is_sherif()
     def is_adjoint(self):
         return self.role.is_adjoint()
+    def is_renegat(self):
+        return self.role.is_renegat()
     def is_outlaw(self):
         return self.role.is_outlaw()
     def is_dead(self):

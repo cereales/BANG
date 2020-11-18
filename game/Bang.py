@@ -24,6 +24,9 @@ class Bang:
     Represent one instance of BANG! game.
     """
     def __init__(self, players_id):
+        self.winners = []
+        self.loosers = []
+
         # Check number of player limit
         self.nb_players = len(players_id)
         if (self.nb_players < MIN_NB_PLAYERS or MAX_NB_PLAYERS < self.nb_players):
@@ -40,6 +43,7 @@ class Bang:
         self.players[0].set_right_player(self.players[-1])
         self.players[-1].set_left_player(self.players[0])
         self.first_player = None
+        self.renegat = None
         self.current_player = None
         self.current_turn_step = TurnStep.DRAW
 
@@ -71,6 +75,8 @@ class Bang:
             role = self.roles.draw_card()
             if role.is_sherif():
                 self.first_player = player
+            elif role.is_renegat():
+                self.renegat = player
             player.set_role(role)
         self.current_player = self.first_player
 
@@ -105,6 +111,13 @@ class Bang:
             player = player.get_left_player()
 
 
+    def get_alive_player_number(self):
+        nb_alive_players = 0
+        for player in self.players:
+            nb_alive_players += 1
+        return nb_alive_players
+
+
     def check_victory(self):
         # Adapt next player turn if suicide
         # In case of suicide, current player is not anymore.
@@ -117,16 +130,35 @@ class Bang:
             logger.debug("Detect suicide. Next player {} will start his turn.".format(self.current_player.id))
 
         logger.debug("Looking if there is a winner.")
-        # tmp : victory is to kill everybody
-        if self.current_player.is_dead():
-            logger.info("DRAW. No player in alive.")
-            self.current_turn_step = TurnStep.END_OF_GAME
-            return True
-        if self.current_player.get_left_player() == self.current_player:
-            logger.info("VICTORY of {}".format(self.current_player.id))
-            self.current_turn_step = TurnStep.END_OF_GAME
-            return True
-        return False
+        if self.first_player.is_dead():
+            logger.debug("Sherif is dead.")
+            nb_alive_players = self.get_alive_player_number()
+            if nb_alive_players == 1 and self.renegat in self.alive_players():
+                for player in self.players:
+                    if player.is_renegat():
+                        self.winners.append(player)
+                    else:
+                        self.loosers.append(player)
+            elif nb_alive_players > 0:
+                for player in self.players:
+                    if player.is_outlaw():
+                        self.winners.append(player)
+                    else:
+                        self.loosers.append(player)
+        else:
+            for player in self.alive_players():
+                if player.is_outlaw() or player.is_renegat():
+                    return False
+            for player in self.players:
+                if player.is_sherif() or player.is_adjoint():
+                    self.winners.append(player)
+                else:
+                    self.loosers.append(player)
+        self.current_turn_step = TurnStep.END_OF_GAME
+        logger.info("END OF GAME")
+        logger.info("winners : {}".format(["{} ({})".format(p.id, self.show_role(p.id).name) for p in self.winners]))
+        logger.info("loosers : {}".format(["{} ({})".format(p.id, self.show_role(p.id).name) for p in self.loosers]))
+        return True
 
 
     ## Turn step actions
@@ -218,4 +250,4 @@ class Bang:
 
     def show_role(self, player_id):
         player = self.players_id[player_id]
-        return player.get_role() if player.is_sherif() or player.is_dead() else None
+        return player.get_role() if player.is_sherif() or player.is_dead() or self.current_turn_step == TurnStep.END_OF_GAME else None
