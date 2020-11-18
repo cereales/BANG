@@ -71,6 +71,11 @@ class Player:
         return card in self.hand
     def has_to_many_cards(self):
         return len(self.hand) > self.life
+    def has_card_in_game(self, card_name):
+        for card in self.in_game:
+            if card.name == card_name:
+                return True
+        return False
     # Turn play
 
 

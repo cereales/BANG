@@ -111,6 +111,9 @@ class Card:
                 if player_with_card_in_game is None:
                     assert len(local_target_players) == 1
                     player_with_card_in_game = local_player
+                    if local_player.has_card_in_game(self.name):
+                        logger.error("Player {} already has card {} in game.".format(local_player.id, self.name))
+                        return execution_result, None
         assert player_with_card_in_game is not None
         return execution_result | ExecuteEffect.IS_SUCCESS, player_with_card_in_game
 
