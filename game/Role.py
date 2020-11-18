@@ -6,3 +6,9 @@ class Role:
 
     def is_sherif(self):
         return self.name == "Sherif"
+
+    def is_adjoint(self):
+        return self.name == "Adjoint"
+
+    def is_outlaw(self):
+        return self.name == "Hors-la-loi"

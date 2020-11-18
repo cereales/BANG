@@ -64,6 +64,10 @@ class Player:
     # Played role & character
     def is_sherif(self):
         return self.role.is_sherif()
+    def is_adjoint(self):
+        return self.role.is_adjoint()
+    def is_outlaw(self):
+        return self.role.is_outlaw()
     def is_dead(self):
         return self.get_life() <= 0
     # Cards
@@ -115,24 +119,43 @@ class Player:
         self.hand.append(card)
     def remove_card_from_hand(self, card):
         self.hand.remove(card)
+        logger.debug("{} : Remove card id={} from hand.".format(self.id, card.id))
+    def remove_all_cards_from_hand(self, p_stack):
+        for card in self.hand.copy():
+            p_stack.discard_card_from_player_hand(self, card)
     def add_card_to_in_game(self, card):
         self.in_game.append(card)
     def remove_card_from_in_game(self, card):
         self.in_game.remove(card)
+        logger.debug("{} : Remove card id={} from game.".format(self.id, card.id))
+    def remove_all_cards_from_in_game(self, p_stack):
+        for card in self.in_game.copy():
+            p_stack.discard_card_from_player_in_game(self, card)
     # Turn play
     def init_turn(self):
         self.nb_bang_used = 0
 
     def on_death(self, p_stack, from_player):
-        # if (self == from_player):
-        #     logger.debug("Detect suicide.")
-        #     print("*** Suicide")
+        is_suicide = False
+        if (self == from_player):
+            is_suicide = True
+            logger.debug("Detect suicide.")
+            # logger.debug("************************************************************")
+            # print("*** Suicide")
         left_player = self.get_left_player()
         right_player = self.get_right_player()
         left_player.set_right_player(right_player)
         right_player.set_left_player(left_player)
-        for card in self.hand:
-            p_stack.discard_card_from_player_hand(self, card)
-        for card in self.in_game:
-            p_stack.discard_card_from_player_in_game(self, card)
+        self.remove_all_cards_from_hand(p_stack)
+        self.remove_all_cards_from_in_game(p_stack)
         logger.debug("{} has been deadly shot.".format(self.id))
+
+        # Penalty
+        if self.is_adjoint() and from_player.is_sherif():
+            from_player.remove_all_cards_from_hand(p_stack)
+            from_player.remove_all_cards_from_in_game(p_stack)
+        # Reward
+        if self.is_outlaw() and not is_suicide:
+            p_stack.draw_card_to_player(from_player)
+            p_stack.draw_card_to_player(from_player)
+            p_stack.draw_card_to_player(from_player)
