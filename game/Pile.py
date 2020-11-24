@@ -47,7 +47,10 @@ class Pile:
         self.stack_len += 1
         self.sorted_card_id.append(id)
 
-    def shuffle(self, start_index=0, end_index=None):
+    def shuffle(self, start_index=None, end_index=None):
+        if start_index is None:
+            start_index = self.index
+
         if (start_index == 0 and end_index is None):
             random.shuffle(self.sorted_card_id)
         else:

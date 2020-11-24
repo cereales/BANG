@@ -23,7 +23,7 @@ class Bang:
     """
     Represent one instance of BANG! game.
     """
-    def __init__(self, players_id):
+    def __init__(self, players_id, sherif=None):
         self.winners = None
         self.loosers = None
 
@@ -68,9 +68,9 @@ class Bang:
             for id in data:
                 character = data[id]
                 self.characters.declare_card(id, Character(id, character["name"], character["life"]))
-        self.init()
+        self.init(forceSherif=sherif)
 
-    def relaunch(self, players_id_to_keep_character):
+    def relaunch(self, players_id_to_keep_character, sherif=None):
         keep_character_ids = []
         skip_character_player = []
         for player_id in players_id_to_keep_character:
@@ -92,11 +92,19 @@ class Bang:
         self.roles.reset()
         self.characters.reset(keep_character_ids)
         self.cards.reset()
-        self.init(skip_character_player)
+        self.init(skip_character_player, forceSherif=sherif)
 
-    def init(self, skip_character_player=None):
+    def init(self, skip_character_player=None, forceSherif=None):
         if skip_character_player is None:
             skip_character_player = []
+        if forceSherif is not None:
+            # that means we force the sherif role
+            logger.debug("Forcing role Sherif to {}".format(forceSherif))
+            card = self.roles.draw_card_to_rack()
+            assert card.is_sherif()
+            # WARNING: *sherif* if the id of player to be sherif
+            self.players_id[forceSherif].set_role(card)
+            self.roles.discard_card(card)
 
         self.winners = []
         self.loosers = []
@@ -107,12 +115,15 @@ class Bang:
         # Distribute roles
         self.roles.shuffle()
         for player in self.players:
-            role = self.roles.draw_card_to_rack()
-            if role.is_sherif():
+            if forceSherif is not None and player.is_id(forceSherif):
                 self.first_player = player
-            elif role.is_renegat():
-                self.renegat = player
-            player.set_role(role)
+            else:
+                role = self.roles.draw_card_to_rack()
+                if role.is_sherif():
+                    self.first_player = player
+                elif role.is_renegat():
+                    self.renegat = player
+                player.set_role(role)
         self.current_player = self.first_player
 
         # Distribute characters

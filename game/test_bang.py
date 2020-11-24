@@ -37,7 +37,7 @@ def assertPileCount(cards):
     assert count == cards.nb_cards
 
 
-game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
+game = Bang(["Alain", "Bernard", "Charlie", "Dede"], sherif="Charlie")
 def simulate_game():
     for p in game.players:
         logger.info("- {} <- {} ({} / {}) -> {}".format(p.left_player.id, p.id, game.show_role(p.id).name if game.show_role(p.id) is not None else "", p.role.name, p.right_player.id))
@@ -50,6 +50,7 @@ def simulate_game():
     for p in game.players:
         main(p)
     pile(game.cards)
+    # input()
 
     player = game.first_player
     compteur = 0
@@ -86,5 +87,5 @@ logger.debug("")
 logger.debug("              =================")
 logger.debug("")
 logger.debug("")
-game.relaunch([p.id for p in game.alive_players()])
+game.relaunch([p.id for p in game.alive_players()], sherif="Dede")
 simulate_game()
