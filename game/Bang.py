@@ -113,7 +113,7 @@ class Bang:
 
     def get_alive_player_number(self):
         nb_alive_players = 0
-        for player in self.players:
+        for player in self.alive_players():
             nb_alive_players += 1
         return nb_alive_players
 
@@ -133,6 +133,8 @@ class Bang:
         if self.first_player.is_dead():
             logger.debug("Sherif is dead.")
             nb_alive_players = self.get_alive_player_number()
+            logger.debug("Renegat: {} is {}.".format(self.renegat.id, "still alive" if self.renegat in self.alive_players() else "dead"))
+            logger.debug("{} players still alive.".format(nb_alive_players))
             if nb_alive_players == 1 and self.renegat in self.alive_players():
                 for player in self.players:
                     if player.is_renegat():
