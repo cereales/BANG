@@ -96,6 +96,11 @@ class Player:
     def set_right_player(self, player):
         self.right_player = player
     # Played role & character
+    def reset(self):
+        self.hand = []
+        self.in_game = []
+        self.effects = []
+        self.weapon = None
     def set_role(self, role):
         self.role = role
     def set_character(self, character):

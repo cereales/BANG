@@ -19,6 +19,14 @@ class Pile:
         self.index = 0
         self.rack_sorted_card_id = []
 
+    def reset(self):
+        self.index = 0
+        self.sorted_card_id = []
+        self.rack_sorted_card_id = []
+        for id in self.cards:
+            self.sorted_card_id.append(id)
+        self.stack_len = self.nb_cards
+
     def declare_card(self, id, card):
         """
         Add a new card to the stack.

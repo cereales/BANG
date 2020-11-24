@@ -24,8 +24,8 @@ class Bang:
     Represent one instance of BANG! game.
     """
     def __init__(self, players_id):
-        self.winners = []
-        self.loosers = []
+        self.winners = None
+        self.loosers = None
 
         # Check number of player limit
         self.nb_players = len(players_id)
@@ -45,7 +45,7 @@ class Bang:
         self.first_player = None
         self.renegat = None
         self.current_player = None
-        self.current_turn_step = TurnStep.DRAW
+        self.current_turn_step = None
 
         # Initiate types of cards
         self.roles = Pile()
@@ -68,6 +68,28 @@ class Bang:
             for id in data:
                 character = data[id]
                 self.characters.declare_card(id, Character(character["name"], character["life"]))
+        self.init()
+
+    def relaunch(self):
+        # Restart Players
+        previous_player = self.players[-1]
+        for player in self.players:
+            # place around the table
+            player.set_right_player(previous_player)
+            previous_player.set_left_player(player)
+            player.reset()
+            previous_player = player
+        self.roles.reset()
+        self.characters.reset()
+        self.cards.reset()
+        self.init()
+
+    def init(self):
+        self.winners = []
+        self.loosers = []
+
+        # Initiate players around table
+        self.current_turn_step = TurnStep.DRAW
 
         # Distribute roles
         self.roles.shuffle()
