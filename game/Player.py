@@ -15,7 +15,7 @@ class Player:
         # Played role
         self.role = None
         # Played character informations
-        self.name = None
+        self.character = None
         self.life = 0
         self.effects = []
         self.weapon = None
@@ -83,6 +83,8 @@ class Player:
                 return True
         return False
     # Turn play
+    def max_life(self):
+        return self.character.max_life + self.is_sherif()
 
 
     ## SETTERS
@@ -97,10 +99,8 @@ class Player:
     def set_role(self, role):
         self.role = role
     def set_character(self, character):
-        if self.is_sherif():
-            character.increase_max_life()
-        self.name = character.name
-        self.life = character.max_life
+        self.character = character
+        self.life = self.max_life()
     def set_weapon(self, weapon_card, p_stack):
         if self.weapon is not None:
             p_stack.discard_card_from_player_in_game(self, self.weapon)
