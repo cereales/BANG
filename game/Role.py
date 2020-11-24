@@ -1,8 +1,12 @@
 
 class Role:
-    def __init__(self, name, desc):
+    def __init__(self, id, name, desc):
+        self.id = id
         self.name = name
         self.desc = desc
+
+    def get_id(self):
+        return self.id
 
     def is_sherif(self):
         return self.name == "Sherif"

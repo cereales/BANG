@@ -4,3 +4,6 @@ class Character:
         self.id = id
         self.name = name
         self.max_life = life
+
+    def get_id(self):
+        return self.id

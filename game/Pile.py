@@ -92,7 +92,7 @@ class Pile:
         """
         Throw a card away in the rack.
         """
-        self.rack_sorted_card_id.append(card.id)
+        self.rack_sorted_card_id.append(card.get_id())
 
     def discard_card_from_player_hand(self, player, card):
         player.remove_card_from_hand(card)

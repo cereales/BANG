@@ -55,7 +55,7 @@ class Bang:
                 if (self.nb_players < int(id)):
                     break # limit the number of role card to the number of players
                 role = data[id]
-                self.roles.declare_card(int(id), Role(role["name"], role["desc"]))
+                self.roles.declare_card(int(id), Role(id, role["name"], role["desc"]))
         self.cards = Pile()
         with open("ressources/cards.json") as file:
             data = json.load(file)
