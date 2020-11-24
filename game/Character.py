@@ -1,5 +1,6 @@
 
 class Character:
-    def __init__(self, name, life):
+    def __init__(self, id, name, life):
+        self.id = id
         self.name = name
         self.max_life = life

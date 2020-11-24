@@ -67,10 +67,20 @@ class Bang:
             data = json.load(file)
             for id in data:
                 character = data[id]
-                self.characters.declare_card(id, Character(character["name"], character["life"]))
+                self.characters.declare_card(id, Character(id, character["name"], character["life"]))
         self.init()
 
-    def relaunch(self):
+    def relaunch(self, players_id_to_keep_character):
+        keep_character_ids = []
+        skip_character_player = []
+        for player_id in players_id_to_keep_character:
+            player = self.players_id[player_id]
+            if player in self.alive_players():
+                skip_character_player.append(player)
+                keep_character_ids.append(player.get_character_id())
+            else:
+                logger.error("Player {} is not alive and cannot keep his character.".format(player_id))
+
         # Restart Players
         previous_player = self.players[-1]
         for player in self.players:
@@ -80,11 +90,14 @@ class Bang:
             player.reset()
             previous_player = player
         self.roles.reset()
-        self.characters.reset()
+        self.characters.reset(keep_character_ids)
         self.cards.reset()
-        self.init()
+        self.init(skip_character_player)
 
-    def init(self):
+    def init(self, skip_character_player=None):
+        if skip_character_player is None:
+            skip_character_player = []
+
         self.winners = []
         self.loosers = []
 
@@ -105,7 +118,8 @@ class Bang:
         # Distribute characters
         self.characters.shuffle()
         for player in self.players:
-            player.set_character(self.characters.draw_card())
+            if player not in skip_character_player:
+                player.set_character(self.characters.draw_card())
 
         # Draw initial cards
         self.cards.shuffle()
@@ -141,6 +155,8 @@ class Bang:
 
 
     def check_victory(self):
+        assert self.winners == []
+        assert self.loosers == []
         # Adapt next player turn if suicide
         # In case of suicide, current player is not anymore.
         if self.current_player.is_dead():

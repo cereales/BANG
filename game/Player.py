@@ -37,6 +37,8 @@ class Player:
     # Played role & character
     def get_role(self):
         return self.role
+    def get_character_id(self):
+        return self.character.id
     def get_life(self):
         return self.life
 

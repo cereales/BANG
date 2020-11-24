@@ -19,13 +19,24 @@ class Pile:
         self.index = 0
         self.rack_sorted_card_id = []
 
-    def reset(self):
+    def reset(self, except_card_id=None):
+        """
+        Rebuild the stack from all declared cards.
+        Except for card ids that are in except list.
+        Exceptions are put in rack.
+        """
+        if except_card_id is None:
+            except_card_id = []
+
         self.index = 0
         self.sorted_card_id = []
         self.rack_sorted_card_id = []
         for id in self.cards:
-            self.sorted_card_id.append(id)
-        self.stack_len = self.nb_cards
+            if id not in except_card_id:
+                self.sorted_card_id.append(id)
+            else:
+                self.rack_sorted_card_id.append(id)
+        self.stack_len = len(self.sorted_card_id)
 
     def declare_card(self, id, card):
         """
