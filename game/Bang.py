@@ -107,7 +107,7 @@ class Bang:
         # Distribute roles
         self.roles.shuffle()
         for player in self.players:
-            role = self.roles.draw_card()
+            role = self.roles.draw_card_to_rack()
             if role.is_sherif():
                 self.first_player = player
             elif role.is_renegat():
@@ -119,7 +119,7 @@ class Bang:
         self.characters.shuffle()
         for player in self.players:
             if player not in skip_character_player:
-                player.set_character(self.characters.draw_card())
+                player.set_character(self.characters.draw_card_to_rack())
 
         # Draw initial cards
         self.cards.shuffle()

@@ -82,6 +82,11 @@ class Pile:
         self.index += 1
         return card
 
+    def draw_card_to_rack(self):
+        card = self.draw_card()
+        self.discard_card(card)
+        return card
+
     def draw_card_to_player(self, player):
         player.add_card_to_hand(self.draw_card())
 
