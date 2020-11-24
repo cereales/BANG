@@ -27,10 +27,27 @@ def findPlayerWith(player, card_name, doubleCard=False, forcePlayer=None):
     logger.warning("{} {} {}".format(len(ids), forcePlayer.id if forcePlayer is not None else None, player.id))
     logger.warning("{} and ({} or {})".format(len(ids) > doubleCard, forcePlayer is  None, forcePlayer == player))
     if counter >= 30:
-        raise ValueError("Cannot find {}".format(card_name))
+        raise TimeoutError("Cannot find {}".format(card_name))
     for p in game.alive_players():
         main(p, player)
     return player, ids[0]
+def assertPileCount(cards):
+    # still in stack
+    stack = cards.stack_len - cards.index
+    logger.debug("There are {} cards in stack.".format(stack))
+    # in rack
+    rack = len(cards.rack_sorted_card_id)
+    logger.debug("There are {} cards in rack.".format(rack))
+    count = stack + rack
+    # alive players
+    for p in game.alive_players():
+        hand = len(p.hand)
+        in_game = len(p.in_game)
+        logger.debug("There are {} cards in {} hand.".format(hand, p.id))
+        logger.debug("There are {} cards in {} game.".format(in_game, p.id))
+        count += hand + in_game
+    logger.debug("Found {}/{} cards.".format(count, cards.nb_cards))
+    assert count == cards.nb_cards
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
@@ -52,3 +69,4 @@ assert game.turn_step_play_card(player.id, card_id)
 
 for p in game.alive_players():
     main(p, player)
+assertPileCount(game.cards)

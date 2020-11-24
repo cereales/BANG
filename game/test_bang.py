@@ -18,6 +18,23 @@ def pile(cards):
     logger.info(" " * index + "V")
     logger.info(string)
     logger.info("rack {}".format(cards.rack_sorted_card_id))
+def assertPileCount(cards):
+    # still in stack
+    stack = cards.stack_len - cards.index
+    logger.debug("There are {} cards in stack.".format(stack))
+    # in rack
+    rack = len(cards.rack_sorted_card_id)
+    logger.debug("There are {} cards in rack.".format(rack))
+    count = stack + rack
+    # alive players
+    for p in game.alive_players():
+        hand = len(p.hand)
+        in_game = len(p.in_game)
+        logger.debug("There are {} cards in {} hand.".format(hand, p.id))
+        logger.debug("There are {} cards in {} game.".format(in_game, p.id))
+        count += hand + in_game
+    logger.debug("Found {}/{} cards.".format(count, cards.nb_cards))
+    assert count == cards.nb_cards
 
 
 game = Bang(["Alain", "Bernard", "Charlie", "Dede"])
@@ -54,3 +71,4 @@ while game.current_turn_step != TurnStep.END_OF_GAME and compteur < 10:
 
     player = player.get_left_player()
     compteur += 1
+    assertPileCount(game.cards)
