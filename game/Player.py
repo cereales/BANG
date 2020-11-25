@@ -128,7 +128,7 @@ class Player:
         self.hand.append(card)
     def remove_card_from_hand(self, card):
         self.hand.remove(card)
-        logger.debug("{} : Remove card id={} from hand.".format(self.id, card.id))
+        logger.debug('{} : Remove card id={} "{}" from hand.'.format(self.id, card.id, card.name))
     def remove_all_cards_from_hand(self, p_stack):
         for card in self.hand.copy():
             p_stack.discard_card_from_player_hand(self, card)
