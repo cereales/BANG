@@ -1,9 +1,9 @@
 
 class Character:
-    def __init__(self, name, life):
+    def __init__(self, id, name, life):
+        self.id = id
         self.name = name
-        self.life = life
         self.max_life = life
 
-    def increase_max_life(self):
-        self.max_life += 1
+    def get_id(self):
+        return self.id

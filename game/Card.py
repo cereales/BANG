@@ -40,6 +40,9 @@ class Card:
         self.activation = activation
         self.effects = effects
 
+    def get_id(self):
+        return self.id
+
     def is_type_card_immediate(self):
         return self.activation & Activation.ONCE
     def get_weapon_range(self):

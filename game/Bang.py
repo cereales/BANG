@@ -24,7 +24,10 @@ class Bang:
     """
     Represent one instance of BANG! game.
     """
-    def __init__(self, players_id):
+    def __init__(self, players_id, sherif=None):
+        self.winners = None
+        self.loosers = None
+
         # Check number of player limit
         self.nb_players = len(players_id)
         if (self.nb_players < MIN_NB_PLAYERS or MAX_NB_PLAYERS < self.nb_players):
@@ -41,8 +44,9 @@ class Bang:
         self.players[0].set_right_player(self.players[-1])
         self.players[-1].set_left_player(self.players[0])
         self.first_player = None
+        self.renegat = None
         self.current_player = None
-        self.current_turn_step = TurnStep.DRAW
+        self.current_turn_step = None
 
         # Initiate types of cards
         self.roles = Pile()
@@ -52,7 +56,7 @@ class Bang:
                 if (self.nb_players < int(id)):
                     break # limit the number of role card to the number of players
                 role = data[id]
-                self.roles.declare_card(int(id), Role(role["name"], role["desc"]))
+                self.roles.declare_card(int(id), Role(id, role["name"], role["desc"]))
         self.cards = Pile()
         with open("ressources/cards.json") as file:
             data = json.load(file)
@@ -64,21 +68,70 @@ class Bang:
             data = json.load(file)
             for id in data:
                 character = data[id]
-                self.characters.declare_card(id, Character(character["name"], character["life"]))
+                self.characters.declare_card(id, Character(id, character["name"], character["life"]))
+        self.init(forceSherif=sherif)
+
+    def relaunch(self, players_id_to_keep_character, sherif=None):
+        keep_character_ids = []
+        skip_character_player = []
+        for player_id in players_id_to_keep_character:
+            player = self.players_id[player_id]
+            if player in self.alive_players():
+                skip_character_player.append(player)
+                keep_character_ids.append(player.get_character_id())
+            else:
+                logger.error("Player {} is not alive and cannot keep his character.".format(player_id))
+
+        # Restart Players
+        previous_player = self.players[-1]
+        for player in self.players:
+            # place around the table
+            player.set_right_player(previous_player)
+            previous_player.set_left_player(player)
+            player.reset()
+            previous_player = player
+        self.roles.reset()
+        self.characters.reset(keep_character_ids)
+        self.cards.reset()
+        self.init(skip_character_player, forceSherif=sherif)
+
+    def init(self, skip_character_player=None, forceSherif=None):
+        if skip_character_player is None:
+            skip_character_player = []
+        if forceSherif is not None:
+            # that means we force the sherif role
+            logger.debug("Forcing role Sherif to {}".format(forceSherif))
+            card = self.roles.draw_card_to_rack()
+            assert card.is_sherif()
+            # WARNING: *sherif* if the id of player to be sherif
+            self.players_id[forceSherif].set_role(card)
+            self.roles.discard_card(card)
+
+        self.winners = []
+        self.loosers = []
+
+        # Initiate players around table
+        self.current_turn_step = TurnStep.DRAW
 
         # Distribute roles
         self.roles.shuffle()
         for player in self.players:
-            role = self.roles.draw_card()
-            if role.is_sherif():
+            if forceSherif is not None and player.is_id(forceSherif):
                 self.first_player = player
-            player.set_role(role)
+            else:
+                role = self.roles.draw_card_to_rack()
+                if role.is_sherif():
+                    self.first_player = player
+                elif role.is_renegat():
+                    self.renegat = player
+                player.set_role(role)
         self.current_player = self.first_player
 
         # Distribute characters
         self.characters.shuffle()
         for player in self.players:
-            player.set_character(self.characters.draw_card())
+            if player not in skip_character_player:
+                player.set_character(self.characters.draw_card_to_rack())
 
         # Draw initial cards
         self.cards.shuffle()
@@ -106,7 +159,16 @@ class Bang:
             player = player.get_left_player()
 
 
+    def get_alive_player_number(self):
+        nb_alive_players = 0
+        for player in self.alive_players():
+            nb_alive_players += 1
+        return nb_alive_players
+
+
     def check_victory(self):
+        assert self.winners == []
+        assert self.loosers == []
         # Adapt next player turn if suicide
         # In case of suicide, current player is not anymore.
         if self.current_player.is_dead():
@@ -118,16 +180,37 @@ class Bang:
             logger.debug("Detect suicide. Next player {} will start his turn.".format(self.current_player.id))
 
         logger.debug("Looking if there is a winner.")
-        # tmp : victory is to kill everybody
-        if self.current_player.is_dead():
-            logger.info("DRAW. No player in alive.")
-            self.current_turn_step = TurnStep.END_OF_GAME
-            return True
-        if self.current_player.get_left_player() == self.current_player:
-            logger.info("VICTORY of {}".format(self.current_player.id))
-            self.current_turn_step = TurnStep.END_OF_GAME
-            return True
-        return False
+        if self.first_player.is_dead():
+            logger.debug("Sherif is dead.")
+            nb_alive_players = self.get_alive_player_number()
+            logger.debug("Renegat: {} is {}.".format(self.renegat.id, "still alive" if self.renegat in self.alive_players() else "dead"))
+            logger.debug("{} players still alive.".format(nb_alive_players))
+            if nb_alive_players == 1 and self.renegat in self.alive_players():
+                for player in self.players:
+                    if player.is_renegat():
+                        self.winners.append(player)
+                    else:
+                        self.loosers.append(player)
+            elif nb_alive_players > 0:
+                for player in self.players:
+                    if player.is_outlaw():
+                        self.winners.append(player)
+                    else:
+                        self.loosers.append(player)
+        else:
+            for player in self.alive_players():
+                if player.is_outlaw() or player.is_renegat():
+                    return False
+            for player in self.players:
+                if player.is_sherif() or player.is_adjoint():
+                    self.winners.append(player)
+                else:
+                    self.loosers.append(player)
+        self.current_turn_step = TurnStep.END_OF_GAME
+        logger.info("END OF GAME")
+        logger.info("winners : {}".format(["{} ({})".format(p.id, self.show_role(p.id).name) for p in self.winners]))
+        logger.info("loosers : {}".format(["{} ({})".format(p.id, self.show_role(p.id).name) for p in self.loosers]))
+        return True
 
 
     ## Turn step actions
@@ -230,4 +313,4 @@ class Bang:
 
     def show_role(self, player_id):
         player = self.players_id[player_id]
-        return player.get_role() if player.is_sherif() or player.is_dead() else None
+        return player.get_role() if player.is_sherif() or player.is_dead() or self.current_turn_step == TurnStep.END_OF_GAME else None
