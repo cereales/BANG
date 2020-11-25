@@ -9,3 +9,6 @@ doc init:
 doc run
 doc test:
 - add line Makefile
+
+doc edit
+- states graph

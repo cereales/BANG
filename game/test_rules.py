@@ -49,6 +49,9 @@ player, card_id = findPlayerWith(player, "bang", False, player)
 assert game.turn_step_play_card(player.id, card_id, player.get_right_player().get_right_player().id)
 player, card_id = findPlayerWith(player, "colt", False, player)
 assert game.turn_step_play_card(player.id, card_id)
+# miss_player, miss_card_id = findPlayerWith(player, "rate")
+# player, card_id = findPlayerWith(player, "colt", False, player)
+# assert game.turn_step_play_card(player.id, card_id)
 
 for p in game.alive_players():
     main(p, player)

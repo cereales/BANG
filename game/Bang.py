@@ -14,6 +14,7 @@ MAX_NB_PLAYERS = 7
 class TurnStep:
     DRAW = 0
     ACTION = 1
+    REACTION = 5
     DISCARD = 2
     END = 3
     END_OF_GAME = 4
@@ -182,6 +183,17 @@ class Bang:
         else:
             self.current_turn_step = TurnStep.END
             assert self.turn_step_next_player(player_id)
+        return True
+
+
+    def turn_step_react_play_card(self, player_id, card_id):
+        if not self.current_react_player.is_id(player_id) or self.current_turn_step != TurnStep.REACTION:
+            logger.error("It is not turn to {} to play a card in reaction.".format(player_id))
+            return False
+        card = self.cards.get_card(card_id)
+        if not self.current_react_player.has_card_in_hand(card):
+            logger.error("Player {} is trying to react with a card he does not have.".format(player_id))
+            return False
         return True
 
 
