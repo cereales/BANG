@@ -77,7 +77,7 @@ class Player:
     # Cards
     def has_card_in_hand(self, card):
         return card in self.hand
-    def has_to_many_cards(self):
+    def has_too_many_cards(self):
         return len(self.hand) > self.life
     def has_card_in_game(self, card_name):
         for card in self.in_game:

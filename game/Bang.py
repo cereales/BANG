@@ -260,7 +260,7 @@ class Bang:
             return False
 
         # End turn
-        if self.current_player.has_to_many_cards():
+        if self.current_player.has_too_many_cards():
             self.current_turn_step = TurnStep.DISCARD
         else:
             self.current_turn_step = TurnStep.END
@@ -281,7 +281,7 @@ class Bang:
         self.cards.discard_card_from_player_hand(self.current_player, card)
 
         # End turn
-        if not self.current_player.has_to_many_cards():
+        if not self.current_player.has_too_many_cards():
             self.current_turn_step = TurnStep.END
         return True
 
