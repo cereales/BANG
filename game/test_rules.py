@@ -10,7 +10,7 @@ def main(player, current):
         logger.info("- {} ({})".format(card.symbol, card.name))
 def changePlayer(player, prefered_card_id_to_discard=None):
     logger.debug("Switching player...")
-    assert game.turn_step_end(player.id)
+    assert game.turn_step_end(player.id) or player.is_dead()
     if game.current_turn_step == TurnStep.DISCARD:
         while not game.turn_step_next_player(player.id):
             if prefered_card_id_to_discard is not None:
