@@ -239,18 +239,30 @@ class Bang:
             return False
 
         # Play card from hand
-        execution_result = ExecuteEffect.FAIL
         target_player = self.players_id[target_player_id] if target_player_id is not None else None
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
         if card.is_type_card_immediate():
+            # Check possible targets
+            next_react_players = card.possible_targets(self.current_player, target_player, target_card)
+            if next_react_players is None:
+                return False
+            # Remove card from hand
+            self.cards.discard_card_from_player_hand(self.current_player, card)
+
+            #tmp
             execution_result = card.execute(self.cards, self.current_player, target_player, target_card)
-            if (execution_result & ExecuteEffect.IS_SUCCESS) and self.current_player.has_card_in_hand(card): # card could not be in hand in case of suicide
-                self.cards.discard_card_from_player_hand(self.current_player, card)
         else:
-            execution_result = card.apply_effects(self.cards, self.current_player, target_player, target_card)
+            # Play card
+            execution_result, player_with_card_in_game = card.apply_effects(self.cards, self.current_player, target_player, target_card)
+            if not execution_result:
+                return False
+            # Remove card from hand
+            self.current_player.remove_card_from_hand(card)
+            player_with_card_in_game.add_card_to_in_game(card)
 
         if execution_result & ExecuteEffect.MAKE_DEAD:
             self.check_victory()
+        return True
         return execution_result
 
 

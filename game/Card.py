@@ -50,15 +50,21 @@ class Card:
         return self.effects[0]["weapon_range"]
 
     def possible_targets(self, player, target_player=None, target_card=None):
+        """
+        Run a check on targets of card.
+        Returns a list of targeted player id for each effect of the card :
+            [targets_effect1, targets_effect2, ...]
+            with targets_effectI : [player_id1, player_id2, ...]
+        Returns None on error.
+        """
         logger.debug('Play {} "{}" id={}'.format(self.symbol, self.name, self.id))
         # limit to one bang per turn
         if self.name == "bang":
             if player.nb_bang_used > 0:
                 logger.error("Reached limit of 1 bang per turn.")
                 return None
-            player.nb_bang_used += 1
 
-        logger.debug("Using effects {}".format(self.effects))
+        logger.debug("Checking effects {}".format(self.effects))
         target_players = []
         for effect in self.effects:
             local_target_players = [target_player]
@@ -93,11 +99,21 @@ class Card:
         return target_players
 
     def execute(self, p_stack, player, target_player=None, target_card=None):
+        """
+        Run a check on given targets, then execute effects of card.
+        For brown card.
+        Returns execution status of type ExecuteEffect.
+        """
+        # Check targets
         execution_result = ExecuteEffect.FAIL
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
             return execution_result
+        # limit to one bang per turn
+        if self.name == "bang":
+            player.nb_bang_used += 1
 
+        # Execute effects
         for effect, local_target_players in zip(self.effects, targets_by_effect):
             type = effect["id"]
             for local_player in local_target_players:
@@ -106,29 +122,34 @@ class Card:
         return execution_result | ExecuteEffect.IS_SUCCESS
 
     def apply_effects(self, p_stack, player, target_player=None, target_card=None):
+        """
+        Run a check on given targets, then wear card to the player targeted by 1st effect.
+        For blue card.
+        Returns execution status of type ExecuteEffect.
+        """
+        # Check targets
         execution_result = ExecuteEffect.FAIL
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
-            return execution_result
+            return execution_result, None
 
+        # Wear card
         player_with_card_in_game = None
         for effect, local_target_players in zip(self.effects, targets_by_effect):
             type = effect["id"]
             for local_player in local_target_players:
                 if player_with_card_in_game is None:
+                    # Only target of the 1st effect wears the card
                     assert len(local_target_players) == 1
                     player_with_card_in_game = local_player
                     if local_player.has_card_in_game(self.name):
                         logger.error("Player {} already has card {} in game.".format(local_player.id, self.name))
-                        return execution_result
+                        return execution_result, None
 
                 if type == Type.WEAPON:
                     local_player.set_weapon(self, p_stack)
 
-        assert player_with_card_in_game is not None
-        player.remove_card_from_hand(self)
-        player_with_card_in_game.add_card_to_in_game(self)
-        return execution_result | ExecuteEffect.IS_SUCCESS
+        return execution_result | ExecuteEffect.IS_SUCCESS, player_with_card_in_game
 
 
 def can_affect(player, targets, caster):
