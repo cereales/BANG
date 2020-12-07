@@ -145,6 +145,7 @@ class Player:
         self.nb_bang_used = 0
 
     def on_death(self, p_stack, from_player):
+        logger.debug("{} has been deadly shot.".format(self.id))
         is_suicide = False
         if (self == from_player):
             is_suicide = True
@@ -157,7 +158,6 @@ class Player:
         right_player.set_left_player(left_player)
         self.remove_all_cards_from_hand(p_stack)
         self.remove_all_cards_from_in_game(p_stack)
-        logger.debug("{} has been deadly shot.".format(self.id))
 
         # Penalty
         if self.is_adjoint() and from_player.is_sherif():

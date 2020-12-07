@@ -64,6 +64,7 @@ def simulate_game():
         main(player)
         if (player.hand[0].name == "bang"):
             assert game.turn_step_play_card(player.id, player.hand[0].id, player.get_right_player().id)
+            assert game.turn_step_dont_react(game.next_react_players[0].id)
             pile(game.cards)
             main(player)
         if game.current_turn_step == TurnStep.ACTION:

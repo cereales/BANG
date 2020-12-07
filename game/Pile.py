@@ -103,6 +103,8 @@ class Pile:
         self.rack_sorted_card_id.append(card.get_id())
 
     def discard_card_from_player_hand(self, player, card):
+        logger.debug("Player hand before discard {}".format([c.id for c in player.hand]))
+        assert card in player.hand
         player.remove_card_from_hand(card)
         self.discard_card(card)
 

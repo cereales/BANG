@@ -4,12 +4,13 @@ logger = logging.getLogger(__name__)
 
 class Activation:
     ONCE = 1 # brown/blue edge card
+    REACT = 2 # can be played during other's turn as reaction
 
 
 class Type:
     DAMAGE = 0
     # HEAL = 1
-    # MISS = 2
+    MISS = 2
     # DRAW = 3
     # DISCARD = 4
     WEAPON = 5
@@ -45,6 +46,8 @@ class Card:
 
     def is_type_card_immediate(self):
         return self.activation & Activation.ONCE
+    def is_type_card_react(self):
+        return self.activation & Activation.REACT
     def get_weapon_range(self):
         assert self.effects[0]["id"] == Type.WEAPON
         return self.effects[0]["weapon_range"]
@@ -98,17 +101,21 @@ class Card:
         logger.debug("Targets are {}".format([[p.id for p in t] for t in target_players]))
         return target_players
 
-    def execute(self, p_stack, player, target_player=None, target_card=None):
+    def execute(self, p_stack, player, target_player=None, target_card=None, in_reaction_to=None):
         """
         Run a check on given targets, then execute effects of card.
-        For brown card.
+        For brown card and reactions.
         Returns execution status of type ExecuteEffect.
         """
-        # Check targets
         execution_result = ExecuteEffect.FAIL
+        # Check type reaction
+        if in_reaction_to and not self.is_type_card_react():
+            logger.error("Cannot play in reaction a card that is not of type REACT.")
+            return ExecuteEffect.FAIL
+        # Check targets
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
-            return execution_result
+            return ExecuteEffect.FAIL
         # limit to one bang per turn
         if self.name == "bang":
             player.nb_bang_used += 1
@@ -118,8 +125,16 @@ class Card:
             type = effect["id"]
             for local_player in local_target_players:
                 if type == Type.DAMAGE:
-                    execution_result |= local_player.lose_health(p_stack, player) & ExecuteEffect.MAKE_DEAD
-        return execution_result | ExecuteEffect.IS_SUCCESS
+                    execution_result |= local_player.lose_health(p_stack, player)
+                if type == Type.MISS:
+                    if in_reaction_to:
+                        react_to_damage = False
+                        for react_to_effect in in_reaction_to.effects:
+                            if react_to_effect["id"] == Type.DAMAGE:
+                                react_to_damage = True
+                        if react_to_damage:
+                            execution_result |= ExecuteEffect.IS_SUCCESS
+        return execution_result # return fail if nothing to do
 
     def apply_effects(self, p_stack, player, target_player=None, target_card=None):
         """
@@ -131,7 +146,7 @@ class Card:
         execution_result = ExecuteEffect.FAIL
         targets_by_effect = self.possible_targets(player, target_player, target_card)
         if targets_by_effect is None:
-            return execution_result, None
+            return ExecuteEffect.FAIL, None
 
         # Wear card
         player_with_card_in_game = None
@@ -144,12 +159,13 @@ class Card:
                     player_with_card_in_game = local_player
                     if local_player.has_card_in_game(self.name):
                         logger.error("Player {} already has card {} in game.".format(local_player.id, self.name))
-                        return execution_result, None
+                        return ExecuteEffect.FAIL, None
 
                 if type == Type.WEAPON:
                     local_player.set_weapon(self, p_stack)
+                    execution_result |= ExecuteEffect.IS_SUCCESS
 
-        return execution_result | ExecuteEffect.IS_SUCCESS, player_with_card_in_game
+        return execution_result, player_with_card_in_game
 
 
 def can_affect(player, targets, caster):

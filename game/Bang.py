@@ -14,6 +14,7 @@ MAX_NB_PLAYERS = 7
 class TurnStep:
     DRAW = 0
     ACTION = 1
+    REACTION = 5
     DISCARD = 2
     END = 3
     END_OF_GAME = 4
@@ -46,6 +47,8 @@ class Bang:
         self.renegat = None
         self.current_player = None
         self.current_turn_step = None
+        self.next_react_players = None
+        self.current_card_to_react = None
 
         # Initiate types of cards
         self.roles = Pile()
@@ -230,6 +233,14 @@ class Bang:
 
 
     def turn_step_play_card(self, player_id, card_id, target_player_id=None, target_card_id=None):
+        """
+        Method to call when it is your turn to play a card from your hand.
+        In case of brown card :
+        - checks targets and go to react mode
+        - discard card from hand
+        In case of blue  card :
+        - wear card from hand
+        """
         if not self.current_player.is_id(player_id) or self.current_turn_step != TurnStep.ACTION:
             logger.error("It is not turn to player {} to play a card.".format(player_id))
             return False
@@ -243,27 +254,95 @@ class Bang:
         target_card = self.cards.get_card(target_card_id) if target_card_id is not None else None
         if card.is_type_card_immediate():
             # Check possible targets
-            next_react_players = card.possible_targets(self.current_player, target_player, target_card)
-            if next_react_players is None:
+            self.next_react_players = card.possible_targets(self.current_player, target_player, target_card)
+            if self.next_react_players is None:
                 return False
             # Remove card from hand
             self.cards.discard_card_from_player_hand(self.current_player, card)
 
-            #tmp
-            execution_result = card.execute(self.cards, self.current_player, target_player, target_card)
+            # Switch to react mode
+            assert len(self.next_react_players) == 1 # TODO: support multiple effects
+            self.next_react_players = self.next_react_players[0]
+            self.current_turn_step = TurnStep.REACTION
+            self.current_card_to_react = card
         else:
             # Play card
             execution_result, player_with_card_in_game = card.apply_effects(self.cards, self.current_player, target_player, target_card)
             if not execution_result:
                 return False
-            # Remove card from hand
+            # Wear card from hand
             self.current_player.remove_card_from_hand(card)
             player_with_card_in_game.add_card_to_in_game(card)
 
-        if execution_result & ExecuteEffect.MAKE_DEAD:
-            self.check_victory()
+            if execution_result & ExecuteEffect.MAKE_DEAD:
+                self.check_victory()
         return True
+
+
+    def turn_step_react_play_card(self, player_id, card_id):
+        """
+        Method to call when it is your turn to react with a card from your hand or your game.
+        In case of card from hand (brown card) :
+        - execute card (count as a check)
+        - discard card from hand
+        In case of card from game (blue card) :
+        - execute card (count as a check)
+        # set card as used for this turn (avoid playing several times the same card)
+        """
+        if self.next_react_players is None or not self.next_react_players[0].is_id(player_id) or self.current_turn_step != TurnStep.REACTION:
+            logger.error("It is not turn to {} to play a card in reaction.".format(player_id))
+            return False
+        current_react_player = self.next_react_players[0]
+        card = self.cards.get_card(card_id)
+        if not current_react_player.has_card_in_hand(card):
+            logger.error("Player {} is trying to react with a card he does not have.".format(player_id))
+            return False
+
+        if current_react_player.has_card_in_hand(card):
+            assert card.is_type_card_immediate() # is brown
+            # Execute card with check
+            execution_result = card.execute(self.cards, current_react_player, self.current_player, in_reaction_to=self.current_card_to_react)
+            # Remove card from hand
+            if execution_result:
+                self.cards.discard_card_from_player_hand(current_react_player, card)
+        else:
+            assert current_react_player.has_card_in_game(card.name)
+            assert not card.is_type_card_immediate() # is blue
+            # Execute card with check
+            execution_result = card.execute(self.cards, current_react_player, self.current_player, in_reaction_to=self.current_card_to_react)
+
+        self.close_react_step()
         return execution_result
+
+
+    def turn_step_dont_react(self, player_id):
+        """
+        Method to call when it is your turn to react, and you do not want to.
+        Execute card effect.
+        """
+        if self.next_react_players is None or not self.next_react_players[0].is_id(player_id) or self.current_turn_step != TurnStep.REACTION:
+            logger.error("It is not turn to {} to play a card in reaction.".format(player_id))
+            return False
+
+        # Execute card effect
+        execution_result = ExecuteEffect.FAIL
+        target_player = self.next_react_players[0]
+        target_card = None # TODO: support target_card
+        card = self.current_card_to_react
+        execution_result = card.execute(self.cards, self.current_player, target_player, target_card)
+        # player has not card in hand anymore, but can draw it again from rewards for example
+
+        self.close_react_step()
+        return execution_result
+
+
+    def close_react_step(self):
+        if len(self.next_react_players) == 1:
+            self.next_react_players = None
+            self.current_turn_step = TurnStep.ACTION
+            self.check_victory()
+        else:
+            self.next_react_players = self.next_react_players[1:]
 
 
     def turn_step_end(self, player_id):

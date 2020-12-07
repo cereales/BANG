@@ -1,4 +1,15 @@
 {
+  "16": {
+    "id": "1S",
+    "name": "rate",
+    "activation": 3,
+    "desc": "",
+    "effects": [{
+      "id": 2,
+      "range": 3,
+      "targets": 6
+    }]
+  },
   "15": {
     "id": "1S",
     "name": "colt",
