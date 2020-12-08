@@ -50,7 +50,7 @@ def simulate_game():
     for p in game.players:
         main(p)
     pile(game.cards)
-    # input()
+    # game.first_player.id == "Dede" and input()
 
     player = game.first_player
     compteur = 0

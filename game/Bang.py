@@ -134,6 +134,8 @@ class Bang:
         for player in self.players:
             if player not in skip_character_player:
                 player.set_character(self.characters.draw_card_to_rack())
+            else:
+                player.set_character(player.character) # reset info about character like life.
 
         # Draw initial cards
         self.cards.shuffle()
