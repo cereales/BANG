@@ -10,10 +10,15 @@ test:
 	@ echo "Launch bot in test mode."
 	@ $(EXEC) bot.py TEST
 
+
 unit-test:
 	@ $(EXEC) game/test_bang.py
 	echo "***********************************************************************"
 	@ $(EXEC) game/test_rules.py
+
+check-ressource:
+	@ $(EXEC) game/test_ressource.py
+
 
 check:
 	$(EXEC) --version
