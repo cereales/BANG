@@ -7,3 +7,8 @@ doc init:
 - config (token)
 
 doc run
+doc test:
+- add line Makefile
+
+doc edit
+- states graph
