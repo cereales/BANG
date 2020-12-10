@@ -14,9 +14,11 @@ logger = logging.getLogger(__name__)
 
 import sys, configparser, traceback
 import asyncio, discord
+from interface.robot_manager import RobotManager
 from actions.action_list import ActionList
 from actions.help import Help
 from actions.stop import Stop
+from actions.game import Game
 
 
 
@@ -51,6 +53,7 @@ client = discord.Client()
 
 ActionList.add_action(Help)
 ActionList.add_action(Stop)
+ActionList.add_action(Game)
 
 
 def action_called(action, message_content):
@@ -92,6 +95,7 @@ async def displayMessage(message):
 @client.event
 async def on_raw_reaction_add(payload):
     logger.debug("Reaction %s detected.", payload.emoji)
+    await RobotManager.on_raw_reaction_add(payload)
 
 
 @client.event
