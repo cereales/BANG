@@ -1,10 +1,11 @@
 ### Setup logger
-import logging
-logging.basicConfig(level=logging.WARNING)
+import logging, Tools
+logging.basicConfig(level=logging.DEBUG)
+logging.addLevelName(Tools.VERBOSE, "VERBOSE") # level must be > 0
 logging.getLogger("discord").setLevel(logging.WARNING)
 logging.getLogger("websockets").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+# logger.setLevel(Tools.VERBOSE)
 
 import sys, configparser, traceback
 import asyncio, discord
