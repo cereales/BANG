@@ -1,3 +1,8 @@
+"""
+Main executable file.
+In this file, instanciate discord client and listen to events.
+Then distribute events to appropriate entities.
+"""
 ### Setup logger
 import logging, utils.Tools as Tools
 logging.basicConfig(level=logging.DEBUG)
