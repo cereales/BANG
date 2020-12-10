@@ -1,5 +1,5 @@
 ### Setup logger
-import logging, Tools
+import logging, utils.Tools as Tools
 logging.basicConfig(level=logging.DEBUG)
 logging.addLevelName(Tools.VERBOSE, "VERBOSE") # level must be > 0
 logging.getLogger("discord").setLevel(logging.WARNING)
@@ -11,6 +11,7 @@ import sys, configparser, traceback
 import asyncio, discord
 from actions.action_list import ActionList
 from actions.help import Help
+from actions.stop import Stop
 
 
 
@@ -44,6 +45,7 @@ except:
 client = discord.Client()
 
 ActionList.add_action(Help)
+ActionList.add_action(Stop)
 
 
 def action_called(action, message_content):
@@ -65,18 +67,20 @@ async def parse_command(message):
 
 async def displayMessage(message):
     message_content = message.content
-    isPrivateMessage = message.guild is None
+    isPrivateMessage = type(message.channel) == discord.DMChannel
     if isPrivateMessage:
         logger.debug("In private message.")
         serverNameOrPrivate = "PRIVATE"
         channelName = ""
         authorName = message.author.name
     else:
+        assert type(message.channel) == discord.TextChannel # can also be GroupChannel
         logger.debug("In server : %s", message.guild)
         serverNameOrPrivate = message.guild.name
         channelName = message.channel.name
-        authorHasNickname = message.author.nick is not None
-        authorName = message.author.nick if authorHasNickname else message.author.name
+        authorName = message.author.display_name # FIXME: doesnot work with nicked
+        if authorName != message.author.name:
+            logger.debug("%s is nicknamed %s", message.author.name, authorName)
     logger.info("(%s) [%s] %s : %s", serverNameOrPrivate, channelName, authorName, message_content)
 
 
