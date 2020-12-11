@@ -8,6 +8,7 @@ from interface.robot import Robot
 class State:
     CREATED = 0
     INITIALIZED = 1
+    ABORTED = 2
 
 
 class GameRobot(Robot):
@@ -25,6 +26,16 @@ class GameRobot(Robot):
         assert self.state == State.CREATED
         self.state = State.INITIALIZED
         await self.send_welcome_message()
+
+
+    ## Utils
+
+    async def get_user_from_payload(self, payload, channel=None):
+        if channel is not None and type(channel) == discord.TextChannel:
+            user = payload.member
+        else:
+            user = await self.client.fetch_user(payload.user_id)
+        return user
 
 
     ## Events
@@ -45,10 +56,7 @@ class GameRobot(Robot):
             if payload.emoji.name == "\U0001f446":
                 logger.debug("Player {} wants to join".format(payload.user_id))
                 if payload.user_id not in self.players:
-                    if type(self.channel) == discord.TextChannel:
-                        player = payload.member
-                    else:
-                        player = await self.client.fetch_user(payload.user_id)
+                    player = await self.get_user_from_payload(payload, self.channel)
                     self.players[payload.user_id] = player
                     await self.refresh_welcome_message()
             elif payload.emoji.name == "\U0001f6aa":
@@ -60,6 +68,9 @@ class GameRobot(Robot):
                 logger.debug("Start game")
             elif payload.emoji.name == "\U0001f6ab":
                 logger.debug("Abort game")
+                self.state = State.ABORTED
+                player = await self.get_user_from_payload(payload, self.channel)
+                await self.abort_message_request(player.display_name)
             else:
                 logger.debug("Not the expected reaction")
 
@@ -77,6 +88,10 @@ class GameRobot(Robot):
         players_list = "\n".join(["- {}".format(player.display_name) for player in self.players.values()])
         await self.message.edit(content=Message.WELCOME + "\n" + players_list)
 
+    async def abort_message_request(self, player_name):
+        await self.message.edit(content=Message.ABORT_REQUEST.format(player_name))
+
 
 class Message:
     WELCOME = "Qui veut faire une partie de **BANG!** ?\n:point_up:: rejoindre la partie\n:door:: quitter la partie\n:arrow_forward:: lancer le jeu\n:no_entry_sign:: abandonner le jeu\n\n__Participants__:"
+    ABORT_REQUEST = ":no_entry_sign: La partie a été annulée par {}."
