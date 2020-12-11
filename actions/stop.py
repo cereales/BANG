@@ -1,4 +1,4 @@
-### Setup logger 
+### Setup logger
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -8,14 +8,14 @@ from actions.action import AbstractAction
 
 
 admins = []
-CONFIG_PATH = "ressources/config.ini"
+CONFIG_PATH = "resources/config.ini"
 config = configparser.ConfigParser(default_section='ADMINS')
 config.read(CONFIG_PATH)
 for admin in config["ADMINS"]:
     admins.append(int(admin))
 
 
-    
+
 class Stop(AbstractAction):
 
     @staticmethod
