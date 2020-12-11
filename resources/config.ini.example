@@ -1,0 +1,15 @@
+[COMMON]
+prefix_command = .
+
+[DEFAULT]
+token =
+# channel id were bot will answer
+target_channel =
+# channel id of your own direct message to bot
+private_channel =
+# channel id were to send error logs
+error_channel =
+
+[ADMINS]
+# user id that can run restricted commands
+# on template `user_id = yes` (yes or anything else, no matter what)

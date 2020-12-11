@@ -3,7 +3,7 @@ from actions.action_list import ActionList
 import configparser
 
 
-CONFIG_PATH = "ressources/config.ini"
+CONFIG_PATH = "resources/config.ini"
 config = configparser.ConfigParser()
 config.read(CONFIG_PATH)
 prefix_command = config["COMMON"]["prefix_command"]
@@ -59,4 +59,3 @@ class Help(AbstractAction):
         help_txt += "```"
 
         await message.channel.send(help_txt)
-
