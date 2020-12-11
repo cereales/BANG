@@ -52,7 +52,7 @@ class Bang:
 
         # Initiate types of cards
         self.roles = Pile()
-        with open("ressources/roles.json") as file:
+        with open("resources/roles.json") as file:
             data = json.load(file)
             for id in data:
                 if (self.nb_players < int(id)):
@@ -60,13 +60,13 @@ class Bang:
                 role = data[id]
                 self.roles.declare_card(int(id), Role(id, role["name"], role["desc"]))
         self.cards = Pile()
-        with open("ressources/cards.json") as file:
+        with open("resources/cards.json") as file:
             data = json.load(file)
             for id in data:
                 card = data[id]
                 self.cards.declare_card(id, Card(id, card["id"], card["name"], card["activation"], card["effects"]))
         self.characters = Pile()
-        with open("ressources/characters.json") as file:
+        with open("resources/characters.json") as file:
             data = json.load(file)
             for id in data:
                 character = data[id]
