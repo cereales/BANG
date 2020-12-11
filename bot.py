@@ -30,7 +30,7 @@ if len(sys.argv) < 2:
 # Global variables
 CONTEXT = sys.argv[1]
 COMMON = "COMMON"
-CONFIG_PATH = "ressources/config.ini"
+CONFIG_PATH = "resources/config.ini"
 
 # Read config file
 try:
