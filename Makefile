@@ -16,8 +16,8 @@ unit-test:
 	echo "***********************************************************************"
 	@ $(EXEC) game/test_rules.py
 
-check-ressource:
-	@ $(EXEC) game/test_ressource.py
+check-resource:
+	@ $(EXEC) game/test_resource.py
 
 
 check:
