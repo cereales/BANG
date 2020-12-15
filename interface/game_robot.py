@@ -21,6 +21,7 @@ class GameRobot(Robot):
         self.channel = channel # place of the game instance
         self.message = None # previous message from bot
         self.players = dict() # discord id
+        self.ordered_player_ids = []
 
     async def init(self):
         assert self.state == State.CREATED
@@ -54,15 +55,17 @@ class GameRobot(Robot):
         if self.state == State.INITIALIZED:
             # payload.emoji.name is not None because not in case of removing reaction of deleted emoji
             if payload.emoji.name == "\U0001f446":
-                logger.debug("Player {} wants to join".format(payload.user_id))
                 if payload.user_id not in self.players:
+                    logger.debug("Player {} wants to join".format(payload.user_id))
                     player = await self.get_user_from_payload(payload, self.channel)
                     self.players[payload.user_id] = player
+                    self.ordered_player_ids.append(payload.user_id)
                     await self.refresh_welcome_message()
             elif payload.emoji.name == "\U0001f6aa":
-                logger.debug("Player {} wants to leave".format(payload.user_id))
                 if payload.user_id in self.players:
+                    logger.debug("Player {} wants to leave".format(payload.user_id))
                     self.players.pop(payload.user_id)
+                    self.ordered_player_ids.remove(payload.user_id)
                     await self.refresh_welcome_message()
             elif payload.emoji.name == "\u25b6\ufe0f":
                 logger.debug("Start game")
@@ -85,8 +88,14 @@ class GameRobot(Robot):
         await self.message.add_reaction("\U0001f6ab")
 
     async def refresh_welcome_message(self):
-        players_list = "\n".join(["- {}".format(player.display_name) for player in self.players.values()])
+        players_list = "\n".join(["{} {}".format(self.getEmoji(order), self.players[player_id].display_name) for order, player_id in enumerate(self.ordered_player_ids)])
         await self.message.edit(content=Message.WELCOME + "\n" + players_list)
+
+    def getEmoji(self, num):
+        try:
+            return [":one:", ":two:", ":three:", ":four:", ":five:", ":six:", ":seven:", ":eight:"][num]
+        except IndexError:
+            return ":question:"
 
     async def abort_message_request(self, player_name):
         await self.message.edit(content=Message.ABORT_REQUEST.format(player_name))
