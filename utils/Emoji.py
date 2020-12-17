@@ -17,12 +17,14 @@ class EmojiDatabase:
         if emoji_registered_name in self.data:
             return self.data[emoji_registered_name][data_index]
         else:
+            logger.warning("Emoji {} is not known.".format(emoji_registered_name))
             return self.data["unknown"][data_index]
 
     def equals(self, emoji_registered_name, emoji_code):
         if emoji_registered_name in self.data:
             return emoji_code in self.data[emoji_registered_name]
         else:
+            logger.warning("Emoji {} is not known.".format(emoji_registered_name))
             return False
 
 
