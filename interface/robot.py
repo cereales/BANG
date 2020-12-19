@@ -67,6 +67,21 @@ class Robot:
             player_id = await self.get_player_id(player, player_id)
             self.DM_players[player_id]["message"] = None
 
+    def is_tracked(self, message_id):
+        if self.message.id == message_id:
+            return True
+        for dm_obj in self.DM_players.values():
+            message = dm_obj["message"]
+            if message is not None and message.id == message_id:
+                return True
+        return False
+
+    def in_guild(self):
+        """
+        Return True if main channel of game is in a guild.
+        """
+        return type(self.channel) == discord.TextChannel
+
 
     ## utils
 
