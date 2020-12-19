@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import discord
 import utils.Tools as Tools
 
 
@@ -19,21 +20,24 @@ class Robot:
 
     async def send(self, message_content, player=None, player_id=None):
         """
-        Send a new message.
+        Send a new message and return it.
         Default to main channel, unless player is given.
         If player object is not available, give player_id.
         """
         if player is None and player_id is None:
             # Send to main channel
             self.message = await self.channel.send(message_content)
+            message = self.message
         else:
             player_id = await self.get_player_id(player, player_id)
             channel = self.DM_players[player_id]["channel"]
             self.DM_players[player_id]["message"] = await channel.send(message_content)
+            message = self.DM_players[player_id]["message"]
+        return message
 
     async def refresh(self, message_content, player=None, player_id=None):
         """
-        Change previous sent message with new content.
+        Change previous sent message with new content, and return it.
         Default to main channel, unless player is given.
         If player object is not available, give player_id.
         """
@@ -41,11 +45,12 @@ class Robot:
         if message is not None:
             await message.edit(content=message_content)
         else:
-            await self.send(message_content, player, player_id)
+            message = await self.send(message_content, player, player_id)
+        return message
 
     async def add(self, sub_message, player=None, player_id=None):
         """
-        Add content to existing message, keeping old part.
+        Add content to existing message, keeping old part, and return it.
         Default to main channel, unless player is given.
         If player object is not available, give player_id.
         """
@@ -53,7 +58,8 @@ class Robot:
         if message is not None:
             await message.edit(content=self.message.content + '\n' + sub_message)
         else:
-            await self.send(sub_message, player, player_id)
+            message = await self.send(sub_message, player, player_id)
+        return message
 
     async def forget(self, player=None, player_id=None):
         """
