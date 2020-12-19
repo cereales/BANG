@@ -1,9 +1,9 @@
 import logging
-from Pile import Pile
-from Role import Role
-from Character import Character
-from Card import Card, ExecuteEffect
-from Player import Player
+from game.Pile import Pile
+from game.Role import Role
+from game.Character import Character
+from game.Card import Card, ExecuteEffect
+from game.Player import Player
 import json
 logger = logging.getLogger(__name__)
 

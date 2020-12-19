@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 import json, re
-from Card import Type
+from game.Card import Type
 
 
 def attribute(card, key, value_type):

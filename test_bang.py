@@ -3,7 +3,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.DEBUG)
 
-from Bang import Bang, TurnStep
+from game.Bang import Bang, TurnStep
 
 def main(player):
     logger.info("Main {} {} {}HP {}".format(player.id, "*" if player.is_sherif() else "", player.get_life(), ["{} id={}".format(c.name, c.id) for c in player.in_game]))

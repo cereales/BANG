@@ -12,12 +12,12 @@ test:
 
 
 unit-test:
-	@ $(EXEC) game/test_bang.py
+	@ $(EXEC) test_bang.py
 	echo "***********************************************************************"
-	@ $(EXEC) game/test_rules.py
+	@ $(EXEC) test_rules.py
 
 check-resource:
-	@ $(EXEC) game/test_resource.py
+	@ $(EXEC) test_resource.py
 
 
 check:
