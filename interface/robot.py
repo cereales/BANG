@@ -83,6 +83,14 @@ class Robot:
         return type(self.channel) == discord.TextChannel
 
 
+    ## Getters
+
+    def get_player(self, player_id):
+        if player_id in self.DM_players:
+            return self.DM_players[player_id]["player"]
+        return None
+
+
     ## utils
 
     async def get_player_id(self, player=None, player_id=None):
