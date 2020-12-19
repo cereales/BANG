@@ -53,6 +53,8 @@ class GameRobot(Robot):
                     if self.in_guild():
                         # OPTIMIZE: direct access to member object
                         await self.get_player_id(player=payload.member)
+                    else:
+                        await self.get_player_id(player_id=payload.user_id)
                     self.ordered_player_ids.append(payload.user_id)
                     await self.refresh_welcome_message()
             elif Emoji.equals("door", payload.emoji.name):
@@ -65,7 +67,9 @@ class GameRobot(Robot):
             elif Emoji.equals("abort", payload.emoji.name):
                 logger.debug("Abort game")
                 self.state = State.ABORTED
+                await self.get_player_id(player_id=payload.user_id) # to allow no playing users to abort game
                 player = self.get_player(payload.user_id)
+                assert player is not None
                 await self.abort_message_request(player.display_name)
             else:
                 logger.debug("Not the expected reaction")
@@ -80,7 +84,8 @@ class GameRobot(Robot):
     async def abort_message_request(self, player_name):
         await self.refresh(Message.ABORT_REQUEST.format(player_name))
         message = await self.get_message()
-        await message.clear_reactions()
+        if self.in_guild():
+            await message.clear_reactions()
 
 
 class Message:
