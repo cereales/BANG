@@ -24,11 +24,11 @@ class GameRobot(Robot):
     async def init(self):
         assert self.state == State.CREATED
         self.state = State.INITIALIZED
-        await self.send(Message.WELCOME)
-        await self.message.add_reaction(Emoji.get_unicode_emoji("point_up"))
-        await self.message.add_reaction(Emoji.get_unicode_emoji("door"))
-        await self.message.add_reaction(Emoji.get_unicode_emoji("play"))
-        await self.message.add_reaction(Emoji.get_unicode_emoji("abort"))
+        message = await self.send(Message.WELCOME)
+        await message.add_reaction(Emoji.get_unicode_emoji("point_up"))
+        await message.add_reaction(Emoji.get_unicode_emoji("door"))
+        await message.add_reaction(Emoji.get_unicode_emoji("play"))
+        await message.add_reaction(Emoji.get_unicode_emoji("abort"))
 
 
     ## Events
@@ -74,11 +74,13 @@ class GameRobot(Robot):
     ## Messages
 
     async def refresh_welcome_message(self):
-        players_list = "\n".join(["{} {}".format(Emoji.get_discord_emoji(order), self.get_player(player_id).display_name) for order, player_id in enumerate(self.ordered_player_ids)])
-        await self.message.edit(content=Message.WELCOME + "\n" + players_list)
+        players_list = "\n".join(["{} {}".format(Emoji.get_discord_emoji(order + 1), self.get_player(player_id).display_name) for order, player_id in enumerate(self.ordered_player_ids)])
+        await self.refresh(Message.WELCOME + "\n" + players_list)
 
     async def abort_message_request(self, player_name):
-        await self.message.edit(content=Message.ABORT_REQUEST.format(player_name))
+        await self.refresh(Message.ABORT_REQUEST.format(player_name))
+        message = await self.get_message()
+        await message.clear_reactions()
 
 
 class Message:
