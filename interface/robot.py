@@ -56,7 +56,7 @@ class Robot:
         """
         message = await self.get_message(player, player_id)
         if message is not None:
-            await message.edit(content=self.message.content + '\n' + sub_message)
+            await message.edit(content=message.content + '\n' + sub_message)
         else:
             message = await self.send(sub_message, player, player_id)
         return message
