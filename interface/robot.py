@@ -3,6 +3,7 @@ logger = logging.getLogger(__name__)
 
 import discord
 import utils.Tools as Tools
+from utils.Emoji import Emoji
 
 
 class Robot:
@@ -140,3 +141,12 @@ class Robot:
             player_id = await self.get_player_id(player, player_id)
             message = self.DM_players[player_id]["message"]
         return message
+
+    def emoji_on_message(self, emoji_registered_name, payload, player_id=None):
+        """
+        Return True if reaction has been received on expected message with the expected emoji.
+        Main message if player_id is None, private one from channel of reaction sender otherwise.
+        In other words, check that emoji is the expected one and reaction was added on main message or the private message in sender channel.
+        """
+        message = self.get_message(player_id=player_id)
+        return Emoji.equals(emoji_registered_name, payload.emoji.name) and message is not None and payload.message_id == message.id
