@@ -116,11 +116,16 @@ class Robot:
             # Need DM channel
             if player is None:
                 # Need player object
-                player = await self.client.fetch_user(player_id)
+                if self.in_guild():
+                    player = await self.channel.guild.fetch_member(player_id)
+                else:
+                    player = await self.client.fetch_user(player_id)
             channel = player.dm_channel
             if channel is None:
                 channel = await player.create_dm()
                 logger.log(Tools.VERBOSE, "Need to create dm {}".format(repr(channel)))
+            logger.debug("Declare player {}".format(player_id))
+            logger.log(Tools.VERBOSE, "Player object of type {}".format(type(player)))
             self.DM_players[player_id] = {"player": player, "channel": channel, "message": None}
         return player_id
 
