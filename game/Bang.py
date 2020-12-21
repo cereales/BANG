@@ -395,3 +395,14 @@ class Bang:
     def show_role(self, player_id):
         player = self.players_id[player_id]
         return player.get_role() if player.is_sherif() or player.is_dead() or self.current_turn_step == TurnStep.END_OF_GAME else None
+
+    def show_role_str(self, player_id):
+        role = self.show_role(player_id)
+        return role.name if role is not None else ""
+
+    def need_to_discard_before_next_player(self):
+        return self.current_turn_step == TurnStep.DISCARD
+
+    # def show_character(self, player_id):
+    #     player = self.players_id[player_id]
+    #     return player
