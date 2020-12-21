@@ -24,7 +24,7 @@ class GameRobot(Robot):
     async def init(self):
         assert self.state == State.CREATED
         self.state = State.INITIALIZED
-        message = await self.send(Message.WELCOME)
+        message = await self.refresh_welcome_message()
         await message.add_reaction(Emoji.get_unicode_emoji("point_up"))
         await message.add_reaction(Emoji.get_unicode_emoji("door"))
         await message.add_reaction(Emoji.get_unicode_emoji("play"))
@@ -79,7 +79,7 @@ class GameRobot(Robot):
 
     async def refresh_welcome_message(self):
         players_list = "\n".join(["{} {}".format(Emoji.get_discord_emoji(order + 1), self.get_player(player_id).display_name) for order, player_id in enumerate(self.ordered_player_ids)])
-        await self.refresh(Message.WELCOME + "\n" + players_list)
+        await self.refresh(Message.WELCOME.format(Emoji.get_discord_emoji("point_up"), Emoji.get_discord_emoji("door"), Emoji.get_discord_emoji("play"), Emoji.get_discord_emoji("abort")) + "\n" + players_list)
 
     async def abort_message_request(self, player_name):
         await self.refresh(Message.ABORT_REQUEST.format(player_name))
@@ -89,5 +89,5 @@ class GameRobot(Robot):
 
 
 class Message:
-    WELCOME = "Qui veut faire une partie de **BANG!** ?\n:point_up:: rejoindre la partie\n:door:: quitter la partie\n:arrow_forward:: lancer le jeu\n:no_entry_sign:: abandonner le jeu\n\n__Participants__:"
+    WELCOME = "Qui veut faire une partie de **BANG!** ?\n{}: rejoindre la partie\n{}: quitter la partie\n{}: lancer le jeu\n{}: abandonner le jeu\n\n__Participants__:"
     ABORT_REQUEST = ":no_entry_sign: La partie a été annulée par {}."
