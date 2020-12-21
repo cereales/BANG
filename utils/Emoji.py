@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import unicodedata as u
+
 
 class EmojiDatabase:
     def __init__(self):
@@ -28,7 +30,16 @@ class EmojiDatabase:
 
     def equals(self, emoji_registered_name, emoji_code):
         if emoji_registered_name in self.data:
-            return emoji_code in self.data[emoji_registered_name]
+            if emoji_code == self.data[emoji_registered_name][0]:
+                logger.debug("Emoji matches '{}'.".format(emoji_registered_name))
+                return True
+            if len(self.data[emoji_registered_name]) < 2:
+                return False
+            unicode = self.data[emoji_registered_name][1]
+            if u.normalize("NFD", u.normalize("NFD", emoji_code).casefold()) == u.normalize("NFD", u.normalize("NFD", unicode).casefold()):
+                logger.debug("Emoji matches '{}'.".format(emoji_registered_name))
+                return True
+            return False
         elif emoji_registered_name in self.aliases:
             return self.equals(self.aliases[emoji_registered_name], emoji_code)
         else:
