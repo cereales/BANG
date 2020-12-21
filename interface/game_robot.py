@@ -71,6 +71,9 @@ class GameRobot(Robot):
             elif self.emoji_on_message("play", payload, expected_message):
                 logger.debug("Start game")
                 try:
+                    self.ordered_player_ids.append("Alain") # TEMP:
+                    self.ordered_player_ids.append("Bernard")
+                    self.ordered_player_ids.append("Charlie")
                     self.game = Bang(self.ordered_player_ids)
                 except ValueError as err:
                     logger.error(err)
@@ -78,6 +81,15 @@ class GameRobot(Robot):
                     return
                 self.state = State.PLAYING
                 await self.send_presentation_message()
+                while not self.game.current_player.is_id(payload.user_id): # TEMP:
+                    await self.add("{} Tour de {}".format(Emoji.get_discord_emoji("right_arrow"), self.game.current_player.id))
+                    self.game.turn_step_draw(self.game.current_player.id)
+                    for card in self.game.current_player.hand:
+                        logger.info("- {} ({}) id={}".format(card.symbol, card.name, card.id))
+                    assert self.game.turn_step_end(self.game.current_player.id)
+                    while not self.game.turn_step_next_player(self.game.current_player.id):
+                        await self.add(Message.DISCARD_CARD.format(Emoji.get_discord_emoji("abort"), self.game.current_player.id, self.game.current_player.hand[0].id, self.game.current_player.hand[0].name))
+                        assert self.game.turn_step_discard_card(self.game.current_player.id, self.game.current_player.hand[0].id)
                 await self.send_next_player(self.game.current_player.id)
             elif self.emoji_on_message("abort", payload, expected_message):
                 logger.debug("Abort game")
@@ -102,6 +114,13 @@ class GameRobot(Robot):
                         self.state = State.DISCARD
                         await self.send_discard_card(payload.user_id)
                     else:
+                        while not self.game.current_player.is_id(payload.user_id): # TEMP:
+                            await self.add("{} Tour de {}".format(Emoji.get_discord_emoji("right_arrow"), self.game.current_player.id))
+                            assert self.game.turn_step_draw(self.game.current_player.id)
+                            assert self.game.turn_step_end(self.game.current_player.id)
+                            while not self.game.turn_step_next_player(self.game.current_player.id):
+                                await self.add("{} {} se défausse de {} {}".format(Emoji.get_discord_emoji("abort"), self.game.current_player.id, self.game.current_player.hand[0].id, self.game.current_player.hand[0].name))
+                                assert self.game.turn_step_discard_card(self.game.current_player.id, self.game.current_player.hand[0].id)
                         await self.send_next_player(self.game.current_player.id)
                 else:
                     await self.add_wrong_turn(payload.user_id)
@@ -123,6 +142,13 @@ class GameRobot(Robot):
                     await self.add(Message.PRIVATE_TOO_MANY_CARDS.format(Emoji.get_discord_emoji("error")))
                 else:
                     self.game.turn_step_next_player(payload.user_id)
+                    while not self.game.current_player.is_id(payload.user_id): # TEMP:
+                        await self.add("{} Tour de {}".format(Emoji.get_discord_emoji("right_arrow"), self.game.current_player.id))
+                        assert self.game.turn_step_draw(self.game.current_player.id)
+                        assert self.game.turn_step_end(self.game.current_player.id)
+                        while not self.game.turn_step_next_player(self.game.current_player.id):
+                            await self.add("{} {} se défausse de {} {}".format(Emoji.get_discord_emoji("abort"), self.game.current_player.id, self.game.current_player.hand[0].id, self.game.current_player.hand[0].name))
+                            assert self.game.turn_step_discard_card(self.game.current_player.id, self.game.current_player.hand[0].id)
                     await self.send_next_player(self.game.current_player.id)
             else:
                 # Check all card numbers
@@ -178,7 +204,7 @@ class GameRobot(Robot):
             await self.add("- {} {} {}/{}HP ; {} cartes".format(player_id, self.game.show_role_str(player_id), game_player.life, game_player.max_life(), len(game_player.hand)))
 
     async def send_next_player(self, player_id):
-        name = await self.get_player(player_id).display_name
+        # name = await self.get_player(player_id).display_name
         await self.add(Message.NEW_TURN.format(Emoji.get_discord_emoji("right_arrow"), player_id))
         message = await self.send(Message.PRIVATE_NEW_TURN, player_id=player_id)
         await message.add_reaction(Emoji.get_unicode_emoji("draw"))

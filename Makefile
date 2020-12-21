@@ -1,4 +1,4 @@
-EXEC=python
+EXEC=python3
 
 all: start
 

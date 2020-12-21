@@ -5,7 +5,7 @@ Then distribute events to appropriate entities.
 """
 ### Setup logger
 import logging, utils.Tools as Tools
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=Tools.VERBOSE)
 logging.addLevelName(Tools.VERBOSE, "VERBOSE") # level must be > 0
 logging.getLogger("discord").setLevel(logging.WARNING)
 logging.getLogger("websockets").setLevel(logging.WARNING)
