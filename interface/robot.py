@@ -68,6 +68,7 @@ class Robot:
         Default to main channel, unless player is given.
         If player object is not available, give player_id.
         """
+        logger.log(Tools.VERBOSE, "Set message as untracked.")
         if player is None and player_id is None:
             self.message = None
         else:
@@ -81,6 +82,7 @@ class Robot:
             message = dm_obj["message"]
             if message is not None and message.id == message_id:
                 return True
+        logger.warning("Message is not tracked.")
         return False
 
     def in_guild(self):
@@ -89,12 +91,17 @@ class Robot:
         """
         return type(self.channel) == discord.TextChannel
 
+    async def clear_reactions(self):
+        if self.in_guild():
+            await self.message.clear_reactions()
+
 
     ## Getters
 
     def get_player(self, player_id):
         if player_id in self.DM_players:
             return self.DM_players[player_id]["player"]
+        logger.error("Undeclared player {}.".format(player_id))
         return None
 
 
@@ -136,10 +143,14 @@ class Robot:
         Declare player if from private channel (if needed).
         """
         if player is None and player_id is None:
+            logger.debug("Get main message.")
             message = self.message
         else:
+            logger.debug("Get private message.")
             player_id = await self.get_player_id(player, player_id)
             message = self.DM_players[player_id]["message"]
+        if message is None:
+            logger.debug("Found message None.")
         return message
 
     def emoji_on_message(self, emoji_registered_name, payload, player_id=None):
