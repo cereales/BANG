@@ -79,7 +79,8 @@ class GameRobot(Robot):
 
     async def refresh_welcome_message(self):
         players_list = "\n".join(["{} {}".format(Emoji.get_discord_emoji(order + 1), self.get_player(player_id).display_name) for order, player_id in enumerate(self.ordered_player_ids)])
-        await self.refresh(Message.WELCOME.format(Emoji.get_discord_emoji("point_up"), Emoji.get_discord_emoji("door"), Emoji.get_discord_emoji("play"), Emoji.get_discord_emoji("abort")) + "\n" + players_list)
+        message = await self.refresh(Message.WELCOME.format(Emoji.get_discord_emoji("point_up"), Emoji.get_discord_emoji("door"), Emoji.get_discord_emoji("play"), Emoji.get_discord_emoji("abort")) + "\n" + players_list)
+        return message
 
     async def abort_message_request(self, player_name):
         await self.refresh(Message.ABORT_REQUEST.format(player_name))
