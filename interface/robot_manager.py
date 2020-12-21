@@ -1,6 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import traceback
 from interface.robot import Robot
 
 
@@ -26,4 +27,6 @@ class RobotManager:
                 try:
                     await robot.on_raw_reaction_add(payload)
                 except AttributeError: # Could not implement method
-                    pass
+                    logger.warning("Methode could not be implemented.")
+                    msg = traceback.format_exc()
+                    logger.error(msg)
