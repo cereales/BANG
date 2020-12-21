@@ -47,7 +47,7 @@ class GameRobot(Robot):
         if self.state == State.INITIALIZED:
             # In initialisation, only main channel has been declared.
             # payload.emoji.name is not None because not in case of _removing_ reaction of deleted emoji
-            if Emoji.equals("point_up", payload.emoji.name):
+            if self.emoji_on_message("point_up", payload):
                 if payload.user_id not in self.ordered_player_ids:
                     logger.debug("Player {} wants to join".format(payload.user_id))
                     if self.in_guild():
@@ -57,14 +57,14 @@ class GameRobot(Robot):
                         await self.get_player_id(player_id=payload.user_id)
                     self.ordered_player_ids.append(payload.user_id)
                     await self.refresh_welcome_message()
-            elif Emoji.equals("door", payload.emoji.name):
+            elif self.emoji_on_message("door", payload):
                 if payload.user_id in self.ordered_player_ids:
                     logger.debug("Player {} wants to leave".format(payload.user_id))
                     self.ordered_player_ids.remove(payload.user_id)
                     await self.refresh_welcome_message()
-            elif Emoji.equals("play", payload.emoji.name):
+            elif self.emoji_on_message("play", payload):
                 logger.debug("Start game")
-            elif Emoji.equals("abort", payload.emoji.name):
+            elif self.emoji_on_message("abort", payload):
                 logger.debug("Abort game")
                 self.state = State.ABORTED
                 await self.get_player_id(player_id=payload.user_id) # to allow no playing users to abort game

@@ -3,6 +3,7 @@ logger = logging.getLogger(__name__)
 
 import discord
 import utils.Tools as Tools
+from utils.Emoji import Emoji
 
 
 class Robot:
@@ -56,7 +57,7 @@ class Robot:
         """
         message = await self.get_message(player, player_id)
         if message is not None:
-            await message.edit(content=self.message.content + '\n' + sub_message)
+            await message.edit(content=message.content + '\n' + sub_message)
         else:
             message = await self.send(sub_message, player, player_id)
         return message
@@ -116,11 +117,16 @@ class Robot:
             # Need DM channel
             if player is None:
                 # Need player object
-                player = await self.client.fetch_user(player_id)
+                if self.in_guild():
+                    player = await self.channel.guild.fetch_member(player_id)
+                else:
+                    player = await self.client.fetch_user(player_id)
             channel = player.dm_channel
             if channel is None:
                 channel = await player.create_dm()
                 logger.log(Tools.VERBOSE, "Need to create dm {}".format(repr(channel)))
+            logger.debug("Declare player {}".format(player_id))
+            logger.log(Tools.VERBOSE, "Player object of type {}".format(type(player)))
             self.DM_players[player_id] = {"player": player, "channel": channel, "message": None}
         return player_id
 
@@ -135,3 +141,12 @@ class Robot:
             player_id = await self.get_player_id(player, player_id)
             message = self.DM_players[player_id]["message"]
         return message
+
+    def emoji_on_message(self, emoji_registered_name, payload, player_id=None):
+        """
+        Return True if reaction has been received on expected message with the expected emoji.
+        Main message if player_id is None, private one from channel of reaction sender otherwise.
+        In other words, check that emoji is the expected one and reaction was added on main message or the private message in sender channel.
+        """
+        message = self.get_message(player_id=player_id)
+        return Emoji.equals(emoji_registered_name, payload.emoji.name) and message is not None and payload.message_id == message.id

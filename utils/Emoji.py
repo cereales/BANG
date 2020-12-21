@@ -1,6 +1,8 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import unicodedata as u
+
 
 class EmojiDatabase:
     def __init__(self):
@@ -23,17 +25,34 @@ class EmojiDatabase:
         10: [":ten:"],
         "unknown": [":question:", "\u2753"]
         }
+        self.aliases = {
+        "discard": "abort",
+        "unknown": "unknown"
+        }
 
     def get_emoji(self, emoji_registered_name, data_index):
         if emoji_registered_name in self.data:
-            return self.data[emoji_registered_name][data_index]
-        else:
-            logger.warning("Emoji {} is not known.".format(emoji_registered_name))
-            return self.data["unknown"][data_index]
+            try:
+                return self.data[emoji_registered_name][data_index]
+            except:
+                pass
+        logger.warning("Emoji {} is not known.".format(emoji_registered_name))
+        return self.data["unknown"][data_index]
 
     def equals(self, emoji_registered_name, emoji_code):
         if emoji_registered_name in self.data:
-            return emoji_code in self.data[emoji_registered_name]
+            if emoji_code == self.data[emoji_registered_name][0]:
+                logger.debug("Emoji matches '{}'.".format(emoji_registered_name))
+                return True
+            if len(self.data[emoji_registered_name]) < 2:
+                return False
+            unicode = self.data[emoji_registered_name][1]
+            if u.normalize("NFD", u.normalize("NFD", emoji_code).casefold()) == u.normalize("NFD", u.normalize("NFD", unicode).casefold()):
+                logger.debug("Emoji matches '{}'.".format(emoji_registered_name))
+                return True
+            return False
+        elif emoji_registered_name in self.aliases:
+            return self.equals(self.aliases[emoji_registered_name], emoji_code)
         else:
             logger.warning("Emoji {} is not known.".format(emoji_registered_name))
             return False
