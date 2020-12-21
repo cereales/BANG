@@ -91,7 +91,14 @@ async def displayMessage(message):
 
 @client.event
 async def on_raw_reaction_add(payload):
-    logger.debug("Reaction %s detected.", payload.emoji)
+    logger.debug("Reaction {} detected ({}).".format(payload.emoji.name, payload.emoji.name.encode("ascii", 'backslashreplace')))
+    try:
+        await RobotManager.on_raw_reaction_add(payload)
+    except:
+        msg = traceback.format_exc()
+        logger.error(msg)
+        channel = client.get_channel(error_channel)
+        await channel.send(msg)
 
 
 @client.event
