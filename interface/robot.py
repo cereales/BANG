@@ -153,11 +153,10 @@ class Robot:
             logger.debug("Found message None.")
         return message
 
-    def emoji_on_message(self, emoji_registered_name, payload, player_id=None):
+    def emoji_on_message(self, emoji_registered_name, payload, message):
         """
         Return True if reaction has been received on expected message with the expected emoji.
-        Main message if player_id is None, private one from channel of reaction sender otherwise.
+        Message must be provided, wheter it is from main channel or private one.
         In other words, check that emoji is the expected one and reaction was added on main message or the private message in sender channel.
         """
-        message = self.get_message(player_id=player_id)
         return Emoji.equals(emoji_registered_name, payload.emoji.name) and message is not None and payload.message_id == message.id
