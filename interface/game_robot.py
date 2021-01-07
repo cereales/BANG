@@ -102,6 +102,13 @@ class GameRobot(Robot):
                     return
                 self.state = State.PLAYING
                 await self.send_presentation_message()
+                while self.is_robot(self.game.current_player.id):
+                    player_id = self.game.current_player.id
+                    player = self.get_player(player_id)
+                    await self.send_next_player(player_id)
+                    player.turn_step_draw(self.game)
+                    player.turn_step_play_card(self.game)
+                    await player.turn_step_end(self.game, self)
                 await self.send_next_player(self.game.current_player.id)
             elif self.emoji_on_message("abort", payload, expected_message):
                 logger.debug("Abort game")
@@ -126,6 +133,13 @@ class GameRobot(Robot):
                         self.state = State.DISCARD
                         await self.send_discard_card(payload.user_id)
                     else:
+                        while self.is_robot(self.game.current_player.id):
+                            player_id = self.game.current_player.id
+                            player = self.get_player(player_id)
+                            await self.send_next_player(player_id)
+                            player.turn_step_draw(self.game)
+                            player.turn_step_play_card(self.game)
+                            await player.turn_step_end(self.game, self)
                         await self.send_next_player(self.game.current_player.id)
                 else:
                     await self.add_wrong_turn(payload.user_id)
@@ -147,6 +161,13 @@ class GameRobot(Robot):
                     await self.add(Message.PRIVATE_TOO_MANY_CARDS.format(Emoji.get_discord_emoji("error")))
                 else:
                     self.game.turn_step_next_player(payload.user_id)
+                    while self.is_robot(self.game.current_player.id):
+                        player_id = self.game.current_player.id
+                        player = self.get_player(player_id)
+                        await self.send_next_player(player_id)
+                        player.turn_step_draw(self.game)
+                        player.turn_step_play_card(self.game)
+                        await player.turn_step_end(self.game, self)
                     await self.send_next_player(self.game.current_player.id)
             else:
                 # Check all card numbers
@@ -185,7 +206,7 @@ class GameRobot(Robot):
 
     async def send_presentation_message(self):
         await self.clear_reactions()
-        for player_id in self.ordered_player_ids[:1]:
+        for player_id in self.ordered_player_ids:
             game_player = self.game.players_id[player_id]
             await self.send(Message.PRIVATE_DISCOVER.format(game_player.role.name), player_id=player_id)
             await self.send_hand_message(player_id)
@@ -193,19 +214,17 @@ class GameRobot(Robot):
 
     async def send_main_view(self):
         await self.forget()
-        for player_id in self.ordered_player_ids[:1]:
+        for player_id in self.ordered_player_ids:
             player = self.get_player(player_id)
             game_player = self.game.players_id[player_id]
             await self.add("- {} {} {}/{}HP ; {} cartes".format(player.display_name, self.game.show_role_str(player_id), game_player.life, game_player.max_life(), len(game_player.hand)))
-        for player_id in self.ordered_player_ids[1:]:
-            game_player = self.game.players_id[player_id]
-            await self.add("- {} {} {}/{}HP ; {} cartes".format(player_id, self.game.show_role_str(player_id), game_player.life, game_player.max_life(), len(game_player.hand)))
 
     async def send_next_player(self, player_id):
-        name = await self.get_player(player_id).display_name
+        name = self.get_player(player_id).display_name
         await self.add(Message.NEW_TURN.format(Emoji.get_discord_emoji("right_arrow"), player_id))
-        message = await self.send(Message.PRIVATE_NEW_TURN, player_id=player_id)
-        await message.add_reaction(Emoji.get_unicode_emoji("draw"))
+        if not self.is_robot(player_id):
+            message = await self.send(Message.PRIVATE_NEW_TURN, player_id=player_id)
+            await message.add_reaction(Emoji.get_unicode_emoji("draw"))
 
     async def add_wrong_turn(self, player_id):
         await self.add(Message.PRIVATE_WRONG_TURN.format(Emoji.get_discord_emoji("error")), player_id=player_id)
