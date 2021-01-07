@@ -103,7 +103,7 @@ class Robot:
     ## Getters
 
     def get_player(self, player_id):
-        if player_id in self.DM_players and not self.is_robot(player_id):
+        if player_id in self.DM_players:
             return self.DM_players[player_id]["player"]
         logger.error("Undeclared player {}.".format(player_id))
         return None
@@ -141,14 +141,14 @@ class Robot:
             self.DM_players[player_id] = {"player": player, "channel": channel, "message": None, "ia": False}
         return player_id
 
-    def declare_robot(self, player_id):
+    def declare_robot(self, player_id, ia):
         """
         Declare robot if needed.
         Return robot identification.
         """
         if player_id not in self.DM_players:
             logger.debug("Declare robot {}".format(player_id))
-            self.DM_players[player_id] = {"ia": True}
+            self.DM_players[player_id] = {"ia": True, "player": ia}
         else:
             logger.warning("Cannot declare robot {} because id is already used.".format(player_id))
 
