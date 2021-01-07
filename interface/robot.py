@@ -31,6 +31,8 @@ class Robot:
             message = self.message
         else:
             player_id = await self.get_player_id(player, player_id)
+            if self.is_robot(player_id):
+                return None
             channel = self.DM_players[player_id]["channel"]
             self.DM_players[player_id]["message"] = await channel.send(message_content)
             message = self.DM_players[player_id]["message"]
@@ -73,15 +75,17 @@ class Robot:
             self.message = None
         else:
             player_id = await self.get_player_id(player, player_id)
-            self.DM_players[player_id]["message"] = None
+            if not self.is_robot(player_id):
+                self.DM_players[player_id]["message"] = None
 
     def is_tracked(self, message_id):
-        if self.message.id == message_id:
+        if self.message is not None and self.message.id == message_id:
             return True
         for dm_obj in self.DM_players.values():
-            message = dm_obj["message"]
-            if message is not None and message.id == message_id:
-                return True
+            if not dm_obj["ia"]:
+                message = dm_obj["message"]
+                if message is not None and message.id == message_id:
+                    return True
         logger.warning("Message is not tracked.")
         return False
 
@@ -92,7 +96,7 @@ class Robot:
         return type(self.channel) == discord.TextChannel
 
     async def clear_reactions(self):
-        if self.in_guild():
+        if self.in_guild() and self.message is not None:
             await self.message.clear_reactions()
 
 
@@ -134,8 +138,25 @@ class Robot:
                 logger.log(Tools.VERBOSE, "Need to create dm {}".format(repr(channel)))
             logger.debug("Declare player {}".format(player_id))
             logger.log(Tools.VERBOSE, "Player object of type {}".format(type(player)))
-            self.DM_players[player_id] = {"player": player, "channel": channel, "message": None}
+            self.DM_players[player_id] = {"player": player, "channel": channel, "message": None, "ia": False}
         return player_id
+
+    def declare_robot(self, player_id, ia):
+        """
+        Declare robot if needed.
+        Return robot identification.
+        """
+        if player_id not in self.DM_players:
+            logger.debug("Declare robot {}".format(player_id))
+            self.DM_players[player_id] = {"ia": True, "player": ia}
+        else:
+            logger.warning("Cannot declare robot {} because id is already used.".format(player_id))
+
+    def is_robot(self, player_id):
+        if player_id in self.DM_players:
+            return self.DM_players[player_id]["ia"]
+        logger.error("Undeclared robot {}.".format(player_id))
+        return None
 
     async def get_message(self, player=None, player_id=None):
         """
@@ -148,7 +169,10 @@ class Robot:
         else:
             logger.debug("Get private message.")
             player_id = await self.get_player_id(player, player_id)
-            message = self.DM_players[player_id]["message"]
+            if self.is_robot(player_id):
+                message = None
+            else:
+                message = self.DM_players[player_id]["message"]
         if message is None:
             logger.debug("Found message None.")
         return message
