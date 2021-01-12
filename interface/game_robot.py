@@ -24,6 +24,7 @@ class GameRobot(Robot):
     def __init__(self, client, channel):
         super().__init__(client, channel)
         self.state = State.CREATED
+        self.game = None
         self.ordered_player_ids = []
         self.robot_count = 0
 
@@ -43,6 +44,7 @@ class GameRobot(Robot):
             player_id = ["Alain", "Bernard", "Charlie", "Dede"][self.robot_count]
         else:
             player_id = "IA" + str(self.robot_count)
+        return player_id
 
 
     ## Events
@@ -85,7 +87,7 @@ class GameRobot(Robot):
                 player_id = self.get_ia_name()
                 self.ordered_player_ids.append(player_id)
                 self.robot_count += 1
-                self.declare_robot(player_id, IADiscard(player_id))
+                self.declare_robot(player_id, IADiscard(player_id, self))
                 await self.refresh_welcome_message()
             elif self.emoji_on_message("remove_robot", payload, expected_message):
                 logger.debug("Remove IA")
@@ -95,6 +97,10 @@ class GameRobot(Robot):
                     await self.refresh_welcome_message()
             elif self.emoji_on_message("play", payload, expected_message):
                 logger.debug("Start game")
+                if 0 == len([p for p in self.ordered_player_ids if not self.is_robot(p)]):
+                    logger.error("Cannot start game with only ia.")
+                    await self.add(Emoji.get_discord_emoji("error") + " Besoin d'au moins un joueur réel.")
+                    return
                 try:
                     self.game = Bang(self.ordered_player_ids)
                 except ValueError as err:
@@ -103,13 +109,6 @@ class GameRobot(Robot):
                     return
                 self.state = State.PLAYING
                 await self.send_presentation_message()
-                while self.is_robot(self.game.current_player.id):
-                    player_id = self.game.current_player.id
-                    player = self.get_player(player_id)
-                    await self.send_next_player(player_id)
-                    player.turn_step_draw(self.game)
-                    player.turn_step_play_card(self.game)
-                    await player.turn_step_end(self.game, self)
                 await self.send_next_player(self.game.current_player.id)
             elif self.emoji_on_message("abort", payload, expected_message):
                 logger.debug("Abort game")
@@ -150,60 +149,53 @@ class GameRobot(Robot):
                     if self.emoji_on_message(index, payload, expected_message):
                         found_index = index - 1
                 if found_index is not None:
-                    card = self.game.current_player.hand[found_index]
-                    if self.game.turn_step_discard_card(payload.user_id, card.id):
-                        await self.add_discard_message(payload.user_id, card)
-                        await self.send_hand_message(payload.user_id)
-                        if self.game.need_to_discard_before_next_player():
-                            self.send_discard_card(payload.user_id)
-                        else:
-                            self.state = State.END
-                            message = await self.get_message(player_id=payload.user_id)
-                            await message.add_reaction(Emoji.get_unicode_emoji("next"))
-                    else:
-                        await self.add_wrong_turn(payload.user_id)
+                    rc = await self.turn_step_discard_card(payload.user_id, found_index)
                 else:
-                    await self.add_wrong_turn(payload.user_id)
-                rc = True
+                    rc = False
         if not rc:
             await self.add_wrong_turn(payload.user_id)
+        while self.game is not None and self.is_robot(self.game.current_player.id):
+            player_id = self.game.current_player.id
+            player = self.get_player(player_id)
+            await player.main(self.game)
 
-    async def turn_step_draw(reaction_user_id):
+    async def turn_step_draw(self, reaction_user_id):
         if not self.game.turn_step_draw(reaction_user_id):
             return False
         await self.send_hand_message(reaction_user_id)
         await self.add_play_card(reaction_user_id)
         return True
 
-    async def turn_step_end(reaction_user_id):
+    async def turn_step_end(self, reaction_user_id):
         if not self.game.turn_step_end(reaction_user_id):
             return False
         if self.game.need_to_discard_before_next_player():
             self.state = State.DISCARD
             await self.send_discard_card(reaction_user_id)
         else:
-            while self.is_robot(self.game.current_player.id):
-                player_id = self.game.current_player.id
-                player = self.get_player(player_id)
-                await self.send_next_player(player_id)
-                player.turn_step_draw(self.game)
-                player.turn_step_play_card(self.game)
-                await player.turn_step_end(self.game, self)
             await self.send_next_player(self.game.current_player.id)
         return True
 
-    async def turn_step_next_player(reaction_user_id):
+    async def turn_step_discard_card(self, reaction_user_id, card_index):
+        card = self.game.current_player.hand[card_index] # TODO: catch index error
+        if not self.game.turn_step_discard_card(reaction_user_id, card.id):
+            return False
+        await self.add_discard_message(reaction_user_id, card)
+        await self.send_hand_message(reaction_user_id)
+        if self.game.need_to_discard_before_next_player():
+            await self.send_discard_card(reaction_user_id)
+        else:
+            self.state = State.END
+            if not self.is_robot(reaction_user_id):
+                message = await self.get_message(player_id=reaction_user_id)
+                await message.add_reaction(Emoji.get_unicode_emoji("next"))
+        return True
+
+    async def turn_step_next_player(self, reaction_user_id):
         if self.game.need_to_discard_before_next_player():
             await self.add(Message.PRIVATE_TOO_MANY_CARDS.format(Emoji.get_discord_emoji("error")))
         else:
             self.game.turn_step_next_player(reaction_user_id)
-            while self.is_robot(self.game.current_player.id):
-                player_id = self.game.current_player.id
-                player = self.get_player(player_id)
-                await self.send_next_player(player_id)
-                player.turn_step_draw(self.game)
-                player.turn_step_play_card(self.game)
-                await player.turn_step_end(self.game, self)
             await self.send_next_player(self.game.current_player.id)
         return True
 
@@ -243,27 +235,31 @@ class GameRobot(Robot):
             await message.add_reaction(Emoji.get_unicode_emoji("draw"))
 
     async def add_wrong_turn(self, player_id):
-        await self.add(Message.PRIVATE_WRONG_TURN.format(Emoji.get_discord_emoji("error")), player_id=player_id)
+        if not self.is_robot(player_id):
+            await self.add(Message.PRIVATE_WRONG_TURN.format(Emoji.get_discord_emoji("error")), player_id=player_id)
 
     async def send_hand_message(self, player_id):
-        await self.forget(player_id=player_id)
-        game_player = self.game.players_id[player_id]
-        logger.log(Tools.VERBOSE, [(c.id, c.name) for c in game_player.hand])
-        for card in game_player.hand:
-            await self.add("- {} {}".format(card.id, card.name), player_id=player_id)
+        if not self.is_robot(player_id):
+            await self.forget(player_id=player_id)
+            game_player = self.game.players_id[player_id]
+            logger.log(Tools.VERBOSE, [(c.id, c.name) for c in game_player.hand])
+            for card in game_player.hand:
+                await self.add("- {} {}".format(card.id, card.name), player_id=player_id)
 
     async def add_play_card(self, player_id):
-        message = await self.add(Message.PRIVATE_PLAY, player_id=player_id)
-        game_player = self.game.players_id[player_id]
-        for index in range(1, len(game_player.hand) + 1):
-            await message.add_reaction(Emoji.get_unicode_emoji(index))
-        await message.add_reaction(Emoji.get_unicode_emoji("next"))
+        if not self.is_robot(player_id):
+            message = await self.add(Message.PRIVATE_PLAY, player_id=player_id)
+            game_player = self.game.players_id[player_id]
+            for index in range(1, len(game_player.hand) + 1):
+                await message.add_reaction(Emoji.get_unicode_emoji(index))
+            await message.add_reaction(Emoji.get_unicode_emoji("next"))
 
     async def send_discard_card(self, player_id):
-        message = await self.send(Message.PRIVATE_DISCARD, player_id=player_id)
-        game_player = self.game.players_id[player_id]
-        for index in range(1, len(game_player.hand) + 1):
-            await message.add_reaction(Emoji.get_unicode_emoji(index))
+        if not self.is_robot(player_id):
+            message = await self.send(Message.PRIVATE_DISCARD, player_id=player_id)
+            game_player = self.game.players_id[player_id]
+            for index in range(1, len(game_player.hand) + 1):
+                await message.add_reaction(Emoji.get_unicode_emoji(index))
 
     async def add_discard_message(self, player_id, card):
         await self.add(Message.DISCARD_CARD.format(Emoji.get_discord_emoji("abort"), player_id, card.id, card.name))
