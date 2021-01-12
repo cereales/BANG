@@ -38,6 +38,12 @@ class GameRobot(Robot):
         await message.add_reaction(Emoji.get_unicode_emoji("play"))
         await message.add_reaction(Emoji.get_unicode_emoji("abort"))
 
+    def get_ia_name(self):
+        if self.robot_count < 4:
+            player_id = ["Alain", "Bernard", "Charlie", "Dede"][self.robot_count]
+        else:
+            player_id = "IA" + str(self.robot_count)
+
 
     ## Events
 
@@ -46,9 +52,11 @@ class GameRobot(Robot):
         # TODO: catch asserts
         # ignore reactions added by me
         if payload.user_id == self.client.user.id:
+            logger.log(Tools.VERBOSE, "Ignore reaction from bot.")
             return
         # ignore reactions to others messages than the waiting one
         if not self.is_tracked(payload.message_id):
+            logger.log(Tools.VERBOSE, "Ignore reaction to untracked message.")
             return
         # NOTE: self.channel.id == payload.channel_id  in case of reaction in main channel (from the way robot is added)
 
@@ -74,10 +82,7 @@ class GameRobot(Robot):
                     await self.refresh_welcome_message()
             elif self.emoji_on_message("add_robot", payload, expected_message):
                 logger.debug("Add IA")
-                if self.robot_count < 4:
-                    player_id = ["Alain", "Bernard", "Charlie", "Dede"][self.robot_count]
-                else:
-                    player_id = "IA" + str(self.robot_count)
+                player_id = self.get_ia_name()
                 self.ordered_player_ids.append(player_id)
                 self.robot_count += 1
                 self.declare_robot(player_id, IADiscard(player_id))
@@ -86,11 +91,7 @@ class GameRobot(Robot):
                 logger.debug("Remove IA")
                 if self.robot_count > 0:
                     self.robot_count -= 1
-                    if self.robot_count < 4:
-                        player_id = ["Alain", "Bernard", "Charlie", "Dede"][self.robot_count]
-                    else:
-                        player_id = "IA" + str(self.robot_count)
-                    self.ordered_player_ids.remove(player_id)
+                    self.ordered_player_ids.remove(self.get_ia_name())
                     await self.refresh_welcome_message()
             elif self.emoji_on_message("play", payload, expected_message):
                 logger.debug("Start game")
@@ -119,30 +120,13 @@ class GameRobot(Robot):
                 await self.abort_message_request(player.display_name)
             else:
                 logger.debug("Not the expected reaction")
+            rc = True
         elif self.state == State.PLAYING:
             expected_message = await self.get_message(player_id=payload.user_id)
             if self.emoji_on_message("draw", payload, expected_message):
-                if self.game.turn_step_draw(payload.user_id):
-                    await self.send_hand_message(payload.user_id)
-                    await self.add_play_card(payload.user_id)
-                else:
-                    await self.add_wrong_turn(payload.user_id)
+                rc = await self.turn_step_draw(payload.user_id)
             elif self.emoji_on_message("next", payload, expected_message):
-                if self.game.turn_step_end(payload.user_id):
-                    if self.game.need_to_discard_before_next_player():
-                        self.state = State.DISCARD
-                        await self.send_discard_card(payload.user_id)
-                    else:
-                        while self.is_robot(self.game.current_player.id):
-                            player_id = self.game.current_player.id
-                            player = self.get_player(player_id)
-                            await self.send_next_player(player_id)
-                            player.turn_step_draw(self.game)
-                            player.turn_step_play_card(self.game)
-                            await player.turn_step_end(self.game, self)
-                        await self.send_next_player(self.game.current_player.id)
-                else:
-                    await self.add_wrong_turn(payload.user_id)
+                rc = await self.turn_step_end(payload.user_id)
             else:
                 # Check all card numbers
                 found_index = None
@@ -153,22 +137,12 @@ class GameRobot(Robot):
                     pass # TODO:
                 else:
                     await self.add_wrong_turn(payload.user_id)
+                rc = True
         elif self.state == State.DISCARD:
             logger.log(Tools.VERBOSE, Emoji.equals("next", payload.emoji.name))
             expected_message = await self.get_message(player_id=payload.user_id)
             if self.emoji_on_message("next", payload, expected_message):
-                if self.game.need_to_discard_before_next_player():
-                    await self.add(Message.PRIVATE_TOO_MANY_CARDS.format(Emoji.get_discord_emoji("error")))
-                else:
-                    self.game.turn_step_next_player(payload.user_id)
-                    while self.is_robot(self.game.current_player.id):
-                        player_id = self.game.current_player.id
-                        player = self.get_player(player_id)
-                        await self.send_next_player(player_id)
-                        player.turn_step_draw(self.game)
-                        player.turn_step_play_card(self.game)
-                        await player.turn_step_end(self.game, self)
-                    await self.send_next_player(self.game.current_player.id)
+                rc = await self.turn_step_next_player(payload.user_id)
             else:
                 # Check all card numbers
                 found_index = None
@@ -190,6 +164,48 @@ class GameRobot(Robot):
                         await self.add_wrong_turn(payload.user_id)
                 else:
                     await self.add_wrong_turn(payload.user_id)
+                rc = True
+        if not rc:
+            await self.add_wrong_turn(payload.user_id)
+
+    async def turn_step_draw(reaction_user_id):
+        if not self.game.turn_step_draw(reaction_user_id):
+            return False
+        await self.send_hand_message(reaction_user_id)
+        await self.add_play_card(reaction_user_id)
+        return True
+
+    async def turn_step_end(reaction_user_id):
+        if not self.game.turn_step_end(reaction_user_id):
+            return False
+        if self.game.need_to_discard_before_next_player():
+            self.state = State.DISCARD
+            await self.send_discard_card(reaction_user_id)
+        else:
+            while self.is_robot(self.game.current_player.id):
+                player_id = self.game.current_player.id
+                player = self.get_player(player_id)
+                await self.send_next_player(player_id)
+                player.turn_step_draw(self.game)
+                player.turn_step_play_card(self.game)
+                await player.turn_step_end(self.game, self)
+            await self.send_next_player(self.game.current_player.id)
+        return True
+
+    async def turn_step_next_player(reaction_user_id):
+        if self.game.need_to_discard_before_next_player():
+            await self.add(Message.PRIVATE_TOO_MANY_CARDS.format(Emoji.get_discord_emoji("error")))
+        else:
+            self.game.turn_step_next_player(reaction_user_id)
+            while self.is_robot(self.game.current_player.id):
+                player_id = self.game.current_player.id
+                player = self.get_player(player_id)
+                await self.send_next_player(player_id)
+                player.turn_step_draw(self.game)
+                player.turn_step_play_card(self.game)
+                await player.turn_step_end(self.game, self)
+            await self.send_next_player(self.game.current_player.id)
+        return True
 
 
     ## Messages
