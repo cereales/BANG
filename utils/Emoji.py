@@ -43,6 +43,8 @@ class EmojiDatabase:
                 return self.data[emoji_registered_name][data_index]
             except:
                 pass
+        elif emoji_registered_name in self.aliases:
+            return self.get_emoji(self.aliases[emoji_registered_name], data_index)
         logger.warning("Emoji {} is not known.".format(emoji_registered_name))
         return self.data["unknown"][data_index]
 
