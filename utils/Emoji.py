@@ -9,7 +9,6 @@ class EmojiDatabase:
         logger.warning("Create EmojiDatabase")
         self.data = {
         "abort": [":no_entry_sign:", "\U0001f6ab"],
-        "add_robot": [":robot:", "\U0001f916"],
         "door": [":door:", "\U0001f6aa"],
         "draw": [":outbox_tray:", "\U0001f4e4"],
         "error": [":x:", "\u0078"],
@@ -18,6 +17,7 @@ class EmojiDatabase:
         "point_up": [":point_up:", "\U0001f446"],
         "remove_robot": [":rocket:", "\U0001f680"],
         "right_arrow": [":arrow_right:", "\u27a1\ufe0f"],
+        "robot": [":robot:", "\U0001f916"],
         0: [":zero:", "\u0030"],
         1: [":one:", "\u0031\ufe0f\u20e3"],
         2: [":two:", "\u0032\ufe0f\u20e3"],
@@ -32,6 +32,7 @@ class EmojiDatabase:
         "unknown": [":question:", "\u2753"]
         }
         self.aliases = {
+        "add_robot": "robot",
         "discard": "abort",
         "unknown": "unknown"
         }
