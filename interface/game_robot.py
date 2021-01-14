@@ -51,6 +51,7 @@ class GameRobot(Robot):
 
     async def on_raw_reaction_add(self, payload):
         logger.log(Tools.VERBOSE, "reaction")
+        logger.debug(self.state)
         # TODO: catch asserts
         # ignore reactions added by me
         if payload.user_id == self.client.user.id:
@@ -132,11 +133,7 @@ class GameRobot(Robot):
                 for index in range(1, len(self.game.current_player.hand) + 1):
                     if self.emoji_on_message(index, payload, expected_message):
                         found_index = index - 1
-                if found_index is not None and self.game.turn_step_play_card(payload.user_id, found_index):
-                    pass # TODO:
-                else:
-                    await self.add_wrong_turn(payload.user_id)
-                rc = True
+                rc = found_index is not None and self.game.turn_step_play_card(payload.user_id, found_index)
         elif self.state == State.DISCARD:
             logger.log(Tools.VERBOSE, Emoji.equals("next", payload.emoji.name))
             expected_message = await self.get_message(player_id=payload.user_id)
@@ -152,12 +149,15 @@ class GameRobot(Robot):
                     rc = await self.turn_step_discard_card(payload.user_id, found_index)
                 else:
                     rc = False
+        elif self.state == State.END:
+            rc = False
         if not rc:
             await self.add_wrong_turn(payload.user_id)
         while self.game is not None and self.is_robot(self.game.current_player.id):
             player_id = self.game.current_player.id
             player = self.get_player(player_id)
             await player.main(self.game)
+        logger.debug(self.state)
 
     async def turn_step_draw(self, reaction_user_id):
         if not self.game.turn_step_draw(reaction_user_id):
@@ -185,7 +185,6 @@ class GameRobot(Robot):
         if self.game.need_to_discard_before_next_player():
             await self.send_discard_card(reaction_user_id)
         else:
-            self.state = State.END
             if not self.is_robot(reaction_user_id):
                 message = await self.get_message(player_id=reaction_user_id)
                 await message.add_reaction(Emoji.get_unicode_emoji("next"))
@@ -229,7 +228,7 @@ class GameRobot(Robot):
 
     async def send_next_player(self, player_id):
         name = self.get_player(player_id).display_name
-        await self.add(Message.NEW_TURN.format(Emoji.get_discord_emoji("right_arrow"), player_id))
+        await self.add(Message.NEW_TURN.format(Emoji.get_discord_emoji("right_arrow"), name))
         if not self.is_robot(player_id):
             message = await self.send(Message.PRIVATE_NEW_TURN, player_id=player_id)
             await message.add_reaction(Emoji.get_unicode_emoji("draw"))
