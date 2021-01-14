@@ -2,6 +2,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import discord
+from interface.robot_manager import RobotManager
 import utils.Tools as Tools
 from utils.Emoji import Emoji
 
@@ -45,6 +46,7 @@ class Robot:
         If player object is not available, give player_id.
         """
         message = await self.get_message(player, player_id)
+        logger.debug("Edit message.")
         if message is not None:
             await message.edit(content=message_content)
         else:
@@ -58,6 +60,7 @@ class Robot:
         If player object is not available, give player_id.
         """
         message = await self.get_message(player, player_id)
+        logger.debug("Add a line to message.")
         if message is not None:
             await message.edit(content=message.content + '\n' + sub_message)
         else:
@@ -70,11 +73,12 @@ class Robot:
         Default to main channel, unless player is given.
         If player object is not available, give player_id.
         """
-        logger.log(Tools.VERBOSE, "Set message as untracked.")
         if player is None and player_id is None:
+            logger.log(Tools.VERBOSE, "Set main message as untracked.")
             self.message = None
         else:
             player_id = await self.get_player_id(player, player_id)
+            logger.log(Tools.VERBOSE, "Set private message as untracked. (player_id={})".format(player_id))
             if not self.is_robot(player_id):
                 self.DM_players[player_id]["message"] = None
 
@@ -139,6 +143,7 @@ class Robot:
             logger.debug("Declare player {}".format(player_id))
             logger.log(Tools.VERBOSE, "Player object of type {}".format(type(player)))
             self.DM_players[player_id] = {"player": player, "channel": channel, "message": None, "ia": False}
+            RobotManager.declare_minor_channel(self.channel.id, channel.id)
         return player_id
 
     def declare_robot(self, player_id, ia):
