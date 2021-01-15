@@ -3,7 +3,7 @@ EXEC=python
 all: start
 
 start:
-	@ $(EXEC) bot.py DEFAULT 2&> log &
+	@ $(EXEC) bot.py DEFAULT > log 2>&1 &
 	@ echo "Bot running."
 
 test:
@@ -12,12 +12,12 @@ test:
 
 
 unit-test:
-	@ $(EXEC) game/test_bang.py
+	@ $(EXEC) test_bang.py
 	echo "***********************************************************************"
-	@ $(EXEC) game/test_rules.py
+	@ $(EXEC) test_rules.py
 
-check-ressource:
-	@ $(EXEC) game/test_ressource.py
+check-resource:
+	@ $(EXEC) test_resource.py
 
 
 check:

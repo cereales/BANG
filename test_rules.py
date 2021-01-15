@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-from Bang import Bang, TurnStep
+from game.Bang import Bang, TurnStep
 
 def main(player, current):
     logger.info("{}\t{}HP ({})  {} {}".format(player.id, player.get_life(), player.role.name, [c.name for c in player.in_game], "<--" if current == player else ""))

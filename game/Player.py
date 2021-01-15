@@ -1,6 +1,6 @@
 import logging
 logger = logging.getLogger(__name__)
-from Card import ExecuteEffect
+from game.Card import ExecuteEffect
 
 
 class Player:

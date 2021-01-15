@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 import json, re
-from Card import Type
+from game.Card import Type
 
 
 def attribute(card, key, value_type):
@@ -12,7 +12,7 @@ def attribute(card, key, value_type):
 
 
 ## Check syntax for roles
-with open("ressources/roles.json") as file:
+with open("resources/roles.json") as file:
     data = json.load(file)
     for id, card in data.items():
         value = attribute(card, "name", str)
@@ -20,7 +20,7 @@ with open("ressources/roles.json") as file:
 
 
 ## Check syntax for cards
-with open("ressources/cards.json") as file:
+with open("resources/cards.json") as file:
     data = json.load(file)
     for id, card in data.items(): # cannot check unique key
         value = attribute(card, "id", str)
@@ -38,7 +38,7 @@ with open("ressources/cards.json") as file:
 
 
 ## Check syntax for roles
-with open("ressources/characters.json") as file:
+with open("resources/characters.json") as file:
     data = json.load(file)
     for id, card in data.items():
         value = attribute(card, "name", str)
