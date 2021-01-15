@@ -14,6 +14,27 @@ class Type:
     # DRAW = 3
     # DISCARD = 4
     WEAPON = 5
+    # MAGASIN = 6
+    # INDIENS = 7
+    # DUEL = 8
+    # MUSTANG = 9
+    # LUNETTE = 10
+    # PLANQUE = 11
+    # PRISON = 12
+    # DYNAMITE = 13
+    # UNLIMITED_BANG = 14
+    # DRAW_FIRST_IN_HAND = 15
+    # DRAW_FIRST_IN_RACK = 23
+    # DRAW_MORE_ON_SECOND_RED = 16
+    # DRAW_CHOOSE_OVER_THREE = 17
+    # DRAW_ON_EMPTY_HAND = 24
+    # DRAW_ON_DAMAGE = 25
+    # DRAW_IN_HAND_ON_DAMAGE = 26
+    # BANG_IS_MISS = 20
+    # DOUBLE_MISS = 19
+    # DEGAINE_CHOOSE_OVER_TWO = 21
+    # DISCARD_TWO_TO_HEAL = 22
+    # STILL_CARDS_ON_DEATH = 18
 
 class Range:
     CASTER = 0

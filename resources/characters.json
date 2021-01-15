@@ -1,18 +1,98 @@
 {
   "1": {
-    "name": "Luke",
-    "life": 2
+    "name": "Jesse Jones",
+    "life": 4,
+    "effect": 15,
+    "desc": "Peut tirer sa première carte de la main d'un joueur."
   },
   "2": {
-    "name": "Jack",
-    "life": 2
+    "name": "Balck Jack",
+    "life": 4,
+    "effect": 16,
+    "desc": "Dévoile la deuxième carte qu'il tire. Si c'est un Coeur ou un Carreau, il tire une carte supplémentaire."
   },
   "3": {
-    "name": "Bad",
-    "life": 2
+    "name": "Hit Carlson",
+    "life": 4,
+    "effect": 17,
+    "desc": "Regarde les 3 première cartes de la pioche et choisit les 2 qu'il garde."
   },
   "4": {
-    "name": "Rose",
-    "life": 2
+    "name": "Sam le Vautour",
+    "life": 4,
+    "effect": 18,
+    "desc": "Dès qu'un joueur est éliminé, il prend les cartes qu'il avait en main et en jeu."
+  },
+  "4": {
+    "name": "Slab le Flingueur",
+    "life": 4,
+    "effect": 19,
+    "desc": "Il faut 2 cartes Raté ! pour annuler ses cartes BANG !"
+  },
+  "4": {
+    "name": "Rose Doolan",
+    "life": 4,
+    "effect": 10,
+    "desc": "Voit tous les autres joueurs à une distance réduite de 1."
+  },
+  "4": {
+    "name": "Calamity Janet",
+    "life": 4,
+    "effect": 20,
+    "desc": "Peut jouer des cartes BANG ! à la place des Raté ! et vice-versa."
+  },
+  "4": {
+    "name": "Lucky Duke",
+    "life": 4,
+    "effect": 21,
+    "desc": "Chaque fois qu'il 'dégaine', il retourne les 2 premières cartes de la pioche et choisit celle qu'il préfère."
+  },
+  "4": {
+    "name": "Sid Ketchum",
+    "life": 4,
+    "effect": 22,
+    "desc": "Peut défausser 2 cartes pour regagner 1 point de vie."
+  },
+  "4": {
+    "name": "Pedro Ramirez",
+    "life": 4,
+    "effect": 23,
+    "desc": "Peut piocher sa première carte dans la défausse."
+  },
+  "4": {
+    "name": "Suzy Lafayette",
+    "life": 4,
+    "effect": 24,
+    "desc": "Dès qu'elle n'a plus aucune carte en main, elle tire une carte."
+  },
+  "4": {
+    "name": "Jourdonnais",
+    "life": 4,
+    "effect": 11,
+    "desc": "Dès qu'il est la cible d'un BANG !, il peut 'dégainer': si c'est un Coeur, il n'est pas touché."
+  },
+  "4": {
+    "name": "Bart Cassidy",
+    "life": 4,
+    "effect": 25,
+    "desc": "Tire 1 carte chaque fois qu'il est touché."
+  },
+  "4": {
+    "name": "El Gringo",
+    "life": 3,
+    "effect": 26,
+    "desc": "Chaque fois qu'il est touché par un joueur, il prend une carte dans la main de celui-ci."
+  },
+  "4": {
+    "name": "Paul Regret",
+    "life": 3,
+    "effect": 9,
+    "desc": "Tous les autres le voient à une distance augmentée de 1."
+  },
+  "4": {
+    "name": "Willy le Kid",
+    "life": 4,
+    "effect": 14,
+    "desc": "Peut jouer autant de cartes BANG ! qu'il le désire."
   }
 }

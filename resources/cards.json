@@ -1,180 +1,82 @@
 {
-  "16": {
-    "id": "1S",
-    "name": "rate",
-    "activation": 3,
-    "desc": "",
-    "effects": [{
-      "id": 2,
-      "range": 3,
-      "targets": 6
-    }]
-  },
-  "15": {
-    "id": "1S",
-    "name": "colt",
-    "activation": 0,
-    "desc": "",
-    "effects": [{
-      "id": 5,
-      "range": 0,
-      "weapon_range": 2,
-      "targets": 3
-    }]
-  },
-  "14": {
-    "id": "1S",
-    "name": "remington",
-    "activation": 0,
-    "desc": "",
-    "effects": [{
-      "id": 5,
-      "range": 0,
-      "weapon_range": 3,
-      "targets": 3
-    }]
-  },
-  "1": {
-    "id": "1C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 0,
-      "targets": 7
-    }]
-  },
-  "2": {
-    "id": "2S",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "3": {
-    "id": "RH",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "4": {
-    "id": "VD",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "5": {
-    "id": "9C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "6": {
-    "id": "8C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "7": {
-    "id": "7C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "8": {
-    "id": "6C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "9": {
-    "id": "5C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "10": {
-    "id": "4C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "11": {
-    "id": "3C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "12": {
-    "id": "2C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  },
-  "13": {
-    "id": "0C",
-    "name": "bang",
-    "activation": 1,
-    "desc": "",
-    "effects": [{
-      "id": 0,
-      "range": 1,
-      "targets": 6
-    }]
-  }
+  "10": {"id": "1C", "name": "carabine", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 4, "targets": 6}]},
+  "11": {"id": "0C", "name": "volcanic", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 1, "targets": 6}, {"id": 14, "range": 0, "targets": 3}]},
+  "12": {"id": "DC", "name": "schofield", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 2, "targets": 6}]},
+  "13": {"id": "RS", "name": "schofield", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 2, "targets": 6}]},
+  "14": {"id": "8S", "name": "winchester", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 5, "targets": 6}]},
+  "15": {"id": "VC", "name": "schofield", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 2, "targets": 6}]},
+  "16": {"id": "RC", "name": "remington", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 3, "targets": 6}]},
+  "17": {"id": "0S", "name": "volcanic", "activation": 0, "effects": [{"id": 5, "range": 0, "weapon_range": 1, "targets": 6}, {"id": 14, "range": 0, "targets": 3}]},
+  "1": {"id": "7D", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "2": {"id": "6D", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "3": {"id": "8C", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "4": {"id": "1H", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "5": {"id": "2C", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "6": {"id": "1S", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "7": {"id": "RH", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "8": {"id": "6C", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "9": {"id": "1D", "name": "bang",     "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "18": {"id": "9D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "19": {"id": "2D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "20": {"id": "4D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "21": {"id": "5D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "22": {"id": "7C", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "23": {"id": "4C", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "24": {"id": "3D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "25": {"id": "8D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "26": {"id": "9C", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "27": {"id": "DH", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "28": {"id": "0D", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "29": {"id": "3C", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "30": {"id": "DD", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "31": {"id": "5C", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "32": {"id": "VD", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "33": {"id": "RD", "name": "bang",    "activation": 1, "effects": [{"id": 0, "range": 1, "targets": 6}]},
+  "34": {"id": "4S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "35": {"id": "2S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "36": {"id": "RC", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "37": {"id": "7S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "38": {"id": "0C", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "39": {"id": "VC", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "40": {"id": "DC", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "41": {"id": "5S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "42": {"id": "8S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "43": {"id": "3S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "44": {"id": "6S", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "45": {"id": "1C", "name": "rate",    "activation": 3, "effects": [{"id": 2, "range": 3, "targets": 6}]},
+  "46": {"id": "9H", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "47": {"id": "0H", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "48": {"id": "7H", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "49": {"id": "6H", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "50": {"id": "8H", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "51": {"id": "VH", "name": "biere",   "activation": 3, "effects": [{"id": 1, "range": 0, "targets": 3}]},
+  "52": {"id": "5H", "name": "saloon",  "activation": 1, "effects": [{"id": 1, "range": 0, "targets": 3}, {"id": 1, "range": 4, "targets": 6}]},
+  "53": {"id": "9S", "name": "convoi",  "activation": 1, "effects": [{"id": 3, "range": 0, "targets": 3}, {"id": 3, "range": 0, "targets": 3}]},
+  "54": {"id": "9S", "name": "convoi",  "activation": 1, "effects": [{"id": 3, "range": 0, "targets": 3}, {"id": 3, "range": 0, "targets": 3}]},
+  "55": {"id": "3H", "name": "diligence", "activation": 1, "effects": [{"id": 3, "range": 0, "targets": 3}, {"id": 3, "range": 0, "targets": 3}, {"id": 3, "range": 0, "targets": 3}]},
+  "56": {"id": "DS", "name": "magasin", "activation": 1, "effects": [{"id": 6, "range": 0, "targets": 3}], "desc": "Révélez autant de cartes qu'il y a de joueurs. Chaque joueur en prend une."},
+  "57": {"id": "9C", "name": "magasin", "activation": 1, "effects": [{"id": 6, "range": 0, "targets": 3}], "desc": "Révélez autant de cartes qu'il y a de joueurs. Chaque joueur en prend une."},
+  "58": {"id": "DH", "name": "braquage", "activation": 1, "effects": [{"id": 3, "range": 2, "max_range": 1, "targets": 7}]},
+  "59": {"id": "8D", "name": "braquage", "activation": 1, "effects": [{"id": 3, "range": 2, "max_range": 1, "targets": 7}]},
+  "60": {"id": "1H", "name": "braquage", "activation": 1, "effects": [{"id": 3, "range": 2, "max_range": 1, "targets": 7}]},
+  "61": {"id": "VH", "name": "braquage", "activation": 1, "effects": [{"id": 3, "range": 2, "max_range": 1, "targets": 7}]},
+  "62": {"id": "VD", "name": "coup de foudre", "activation": 1, "effects": [{"id": 4, "range": 3, "targets": 7}]},
+  "63": {"id": "9D", "name": "coup de foudre", "activation": 1, "effects": [{"id": 4, "range": 3, "targets": 7}]},
+  "64": {"id": "0D", "name": "coup de foudre", "activation": 1, "effects": [{"id": 4, "range": 3, "targets": 7}]},
+  "65": {"id": "RH", "name": "coup de foudre", "activation": 1, "effects": [{"id": 4, "range": 3, "targets": 7}]},
+  "66": {"id": "0H", "name": "gatling", "activation": 1, "effects": [{"id": 0, "range": 4, "targets": 6}]},
+  "67": {"id": "1D", "name": "indiens", "activation": 1, "effects": [{"id": 7, "range": 4, "targets": 6}], "desc": "Tous les autres joueurs défaussent 1 BANG ! ou perdent 1 point de vie."},
+  "68": {"id": "RD", "name": "indiens", "activation": 1, "effects": [{"id": 7, "range": 4, "targets": 6}], "desc": "Tous les autres joueurs défaussent 1 BANG ! ou perdent 1 point de vie."},
+  "69": {"id": "8C", "name": "duel",    "activation": 1, "effects": [{"id": 8, "range": 3, "targets": 6}], "desc": "Le joueur cible se défausse d'un BANG !, puis c'est à vous, etc. Le premier qui ne le fait pas perd 1 point de vie."},
+  "70": {"id": "DD", "name": "duel",    "activation": 1, "effects": [{"id": 8, "range": 3, "targets": 6}], "desc": "Le joueur cible se défausse d'un BANG !, puis c'est à vous, etc. Le premier qui ne le fait pas perd 1 point de vie."},
+  "71": {"id": "VS", "name": "duel",    "activation": 1, "effects": [{"id": 8, "range": 3, "targets": 6}], "desc": "Le joueur cible se défausse d'un BANG !, puis c'est à vous, etc. Le premier qui ne le fait pas perd 1 point de vie."},
+  "72": {"id": "9H", "name": "mustang", "activation": 0, "effects": [{"id": 9, "range": 0, "targets": 3}], "desc": "Les autres vous voient à une distance augmentée de 1."},
+  "73": {"id": "8H", "name": "mustang", "activation": 0, "effects": [{"id": 9, "range": 0, "targets": 3}], "desc": "Les autres vous voient à une distance augmentée de 1."},
+  "74": {"id": "1S", "name": "lunette", "activation": 0, "effects": [{"id": 10, "range": 0, "targets": 3}], "desc": "Vous voyez les autres à une distance réduite de 1."},
+  "75": {"id": "RS", "name": "planque", "activation": 2, "effects": [{"id": 11, "range": 0, "targets": 3}]},
+  "76": {"id": "DS", "name": "planque", "activation": 2, "effects": [{"id": 11, "range": 0, "targets": 3}]},
+  "77": {"id": "0S", "name": "prison",  "activation": 0, "effects": [{"id": 12, "range": 3, "targets": 4}], "desc": "Coeur = Défaussez la prison et jouez normalement. Sinon, défaussez la prison et passez votre tour."},
+  "78": {"id": "4H", "name": "prison",  "activation": 0, "effects": [{"id": 12, "range": 3, "targets": 4}], "desc": "Coeur = Défaussez la prison et jouez normalement. Sinon, défaussez la prison et passez votre tour."},
+  "79": {"id": "VS", "name": "prison",  "activation": 0, "effects": [{"id": 12, "range": 3, "targets": 4}], "desc": "Coeur = Défaussez la prison et jouez normalement. Sinon, défaussez la prison et passez votre tour."},
+  "80": {"id": "2H", "name": "dynamite", "activation": 0, "effects": [{"id": 13, "range": 0, "targets": 7}]}
 }
