@@ -390,7 +390,15 @@ class Bang:
         return True
 
 
+    def __str__(self):
+        return "{} ({})".format(self.get_current_turn_step(), self.get_current_player().id)
+
+
     ## Out access
+
+    def iter_players(self):
+        for player in self.players:
+            yield player
 
     def show_role(self, player_id):
         player = self.players_id[player_id]
@@ -399,6 +407,29 @@ class Bang:
     def show_role_str(self, player_id):
         role = self.show_role(player_id)
         return role.name if role is not None else ""
+
+    def get_current_player(self):
+        return self.current_player
+
+    def get_current_turn_step(self):
+        return ["DRAW", "ACTION", "DISCARD", "END", "END_OF_GAME", "REACTION"][self.current_turn_step]
+
+    def get_player(self, player_id):
+        return self.players_id[player_id]
+
+    def iter_in_game(self, player_id):
+        for card in self.get_player(player_id).in_game:
+            yield card
+
+    def iter_hand(self, player_id):
+        for card in self.get_player(player_id).hand:
+            yield card
+
+    def can_play_card(self, player_id, card_index, in_hand=True):
+        pass # TODO:
+
+    def can_react_with_card(self, player_id, card_index, in_hand=True):
+        pass # TODO:
 
     def need_to_discard_before_next_player(self):
         return self.current_turn_step == TurnStep.DISCARD
